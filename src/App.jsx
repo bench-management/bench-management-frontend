@@ -1,14 +1,14 @@
 import { useState } from 'react';
 
 import './App.css';
-import Formm from './component/Formm';
+import CandidateForm from './component/candidateForm';
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      <Formm/>
+      <CandidateForm/>
     </>
   );
 }
