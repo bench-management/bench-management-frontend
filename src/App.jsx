@@ -1,15 +1,22 @@
-import { useState } from 'react';
-
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import CandidateForm from './component/candidateForm';
+import CandidateForm from './component/CandidateForm';
+import AdminNavbar from './component/AdminNavbar';
+import CandidateSearchPage from './component/CandidateSearchPage';
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
-    <>
-      <CandidateForm/>
-    </>
+    <Router>
+      <AdminNavbar />
+      <Routes>
+        {/* <Route path='/' element={}> */}
+          {/* <Route index element={<h1>Home Page</h1>} /> */}
+          <Route path="search-candidate" element={<CandidateSearchPage />} />
+          <Route path="add-candidate" element={<CandidateForm />} />
+        {/* </Route> */}
+      </Routes>
+    </Router>
   );
 }
 
