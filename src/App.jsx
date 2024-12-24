@@ -4,11 +4,15 @@ import CandidateForm from './component/CandidateForm';
 import AdminNavbar from './component/AdminNavbar';
 import CandidateSearchPage from './component/CandidateSearchPage';
 
+
+
+
 function App() {
 
   return (
     <Router>
       <AdminNavbar />
+      <CandidateSearchPage/>
       <Routes>
         {/* <Route path='/' element={}> */}
           {/* <Route index element={<h1>Home Page</h1>} /> */}
