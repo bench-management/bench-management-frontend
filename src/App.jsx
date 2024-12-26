@@ -8,6 +8,7 @@ function App() {
   return (
     <Router>
       <AdminNavbar />
+      <CandidateSearchPage />
       <Routes>
         {/* <Route path='/' element={}> */}
         {/* <Route index element={<h1>Home Page</h1>} /> */}
