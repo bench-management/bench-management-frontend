@@ -19,7 +19,7 @@ const AdminNavbar = () => {
               <NavDropdown.Item as={Link} to="/add-candidate">Add Candidate</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/delete-candidate">Delete Candidate</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item as= {Link}to="/search-candidate">Search Candidate</NavDropdown.Item>
+              <NavDropdown.Item as= {Link} to="/search-candidate">Search Candidate</NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
