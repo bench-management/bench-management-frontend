@@ -1,0 +1,67 @@
+
+.candidate-search-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #a9aaab;
+    padding: 1rem;
+}
+
+.card {
+    width: 80%;
+    max-width: 1200px;
+    background: #c0bcbc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 2rem;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.search-input, .clear-button {
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: 0.3s ease-in-out;
+}
+
+.search-input {
+    flex: 1;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #007ad9;
+}
+
+.clear-button {
+    background: #007ad9;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.clear-button:hover {
+    background: #005fa1;
+}
+
+.p-datatable {
+    border: none;
+    font-size: 0.9rem;
+}
+
+.p-datatable-header {
+    border-bottom: 1px solid #ccc;
+}
+
+.p-paginator {
+    margin-top: 1rem;
+}
