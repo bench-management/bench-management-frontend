@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
@@ -7,26 +7,37 @@ import 'primereact/resources/primereact.min.css'; // PrimeReact core CSS
 import 'primeicons/primeicons.css'; // PrimeIcons
 import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS
 
-const CandidateTable = () => {
+const CandidateSearchPage = () => {
     const [candidates, setCandidates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filters, setFilters] = useState({});
 
     useEffect(() => {
-        fetch('https://676a5c79863eaa5ac0de18c9.mockapi.io/search/candidate/searchCandidate')
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
+        fetch('http://localhost:8080/candidates')
+            .then((response) => response.json())
             .then((data) => {
-                setCandidates(data);
+                const transformedData = data.map((candidate) => ({
+                    id: candidate.id,
+                    name: candidate.name,
+                    skill: candidate.skill,
+                    pastExperience: candidate.pastExperience,
+                    baseLocation: candidate.baseLocation,
+                    status: candidate.status,
+                    client: candidate.clientId,
+                    projectType: candidate.projectType,
+                    onBench: candidate.onBench,
+                    benchStartingDate: candidate.benchStartDate,
+                    tentativeOnboarding_Date: candidate.tentativeOnboardingDate,
+                    remarks: candidate.remarks,
+                    thLink: candidate.thLink,
+                    interviewId: candidate.interviewIds,
+                }));
+                setCandidates(transformedData);
 
                 // Initialize filters for each field
                 const initialFilters = {};
-                Object.keys(data[0]).forEach((key) => {
+                Object.keys(transformedData[0]).forEach((key) => {
                     initialFilters[key] = { value: '' };
                 });
                 setFilters(initialFilters);
@@ -100,7 +111,6 @@ const CandidateTable = () => {
                         rows={10}
                         filters={filters}
                         filterDisplay="row"
-                        responsiveLayout="scroll"
                         className="table table-striped table-bordered table-hover text-center"
                     >
                         {candidates.length > 0 &&
@@ -143,4 +153,4 @@ const CandidateTable = () => {
     );
 };
 
-export default CandidateTable;
+export default CandidateSearchPage;

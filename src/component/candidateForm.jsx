@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Form, Card, Button } from 'react-bootstrap';
+import axios from 'axios';
 
 function CandidateForm() {
   const [formData, setFormData] = useState({});
-  const [submittedData, setSubmittedData] = useState([]);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -13,32 +15,67 @@ function CandidateForm() {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Add the current form data to the submitted data list
-    setSubmittedData((prevData) => {
-      const updatedData = [...prevData, formData];
-      console.log('Submitted Data:', updatedData);
-      return updatedData;
-    });
+    // Format the data to match the backend model
+    const formattedData = {
+      ...formData,
+      onBench: formData.onBench === "yes",
+      mentorship: formData.mentorship === "yes",
+      pastExperience: parseInt(formData.pastExperience, 10) || 0,
+      mentorshipRating: parseInt(formData.mentorshipRating, 10) || 0,
+    };
 
-    // Clear the form for new input
-    setFormData({});
+    try {
+      const response = await axios.post("http://localhost:8080/candidates", formattedData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      setSuccess(true);
+      console.log("Candidate submitted successfully:", response.data);
+
+      // Clear the form for new input
+      setFormData({});
+    } catch (err) {
+      console.error("Error submitting candidate data:", err);
+      setError("Failed to submit candidate data. Please try again.");
+    }
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+    <div
+      className="d-flex justify-content-center align-items-center"
+      style={{ minHeight: '100vh' }}
+    >
       <Card style={{ width: '80%', maxWidth: '800px' }} className="p-4">
         <Card.Body>
           <h3 className="text-center mb-4">Candidate Details Form</h3>
+          {error && <div className="alert alert-danger">{error}</div>}
+          {success && (
+            <div className="alert alert-success">
+              Candidate submitted successfully!
+            </div>
+          )}
           <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="formGroupEmpId">
+              <Form.Label>Employee ID:</Form.Label>
+              <Form.Control
+                type="text"
+                name="empId"
+                value={formData.empId || ''}
+                placeholder="Enter employee ID"
+                onChange={handleChange}
+              />
+            </Form.Group>
+
             <Form.Group className="mb-3" controlId="formGroupName">
               <Form.Label>Candidate Name:</Form.Label>
               <Form.Control
                 type="text"
-                name="candidateName"
-                value={formData.candidateName || ''}
+                name="name"
+                value={formData.name || ''}
                 placeholder="Enter candidate name"
                 onChange={handleChange}
               />
@@ -48,8 +85,8 @@ function CandidateForm() {
               <Form.Label>Skills:</Form.Label>
               <Form.Control
                 type="text"
-                name="skills"
-                value={formData.skills || ''}
+                name="skill"
+                value={formData.skill || ''}
                 placeholder="Enter skills"
                 onChange={handleChange}
               />
@@ -99,7 +136,10 @@ function CandidateForm() {
               />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formGroupTentativeOnboardingDate">
+            <Form.Group
+              className="mb-3"
+              controlId="formGroupTentativeOnboardingDate"
+            >
               <Form.Label>Tentative Onboarding Date:</Form.Label>
               <Form.Control
                 type="date"
@@ -258,12 +298,12 @@ function CandidateForm() {
               />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formGroupSelectionDate">
-              <Form.Label>Selection Date:</Form.Label>
+            <Form.Group className="mb-3" controlId="formGroupSelectedDate">
+              <Form.Label>Selected Date:</Form.Label>
               <Form.Control
                 type="date"
-                name="selectionDate"
-                value={formData.selectionDate || ''}
+                name="selectedDate"
+                value={formData.selectedDate || ''}
                 onChange={handleChange}
               />
             </Form.Group>
@@ -274,6 +314,17 @@ function CandidateForm() {
                 type="date"
                 name="onboardingDate"
                 value={formData.onboardingDate || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formGroupInterviewIds">
+              <Form.Label>Interview IDs:</Form.Label>
+              <Form.Control
+                type="text"
+                name="interviewIds"
+                value={formData.interviewIds || ''}
+                placeholder="Enter interview IDs"
                 onChange={handleChange}
               />
             </Form.Group>
