@@ -43,6 +43,7 @@ function App() {
   return (
     <Router>
       <AdminNavbar />
+      <CandidateSearchPage/>
       <Routes>
         <Route path="search-candidate" element={<CandidateSearchPage />} />
         <Route path="add-candidate" element={<CandidateForm />} />
