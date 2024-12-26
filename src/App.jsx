@@ -8,15 +8,9 @@ function App() {
   return (
     <Router>
       <AdminNavbar />
-      <CandidateSearchPage />
       <Routes>
-        {/* <Route path='/' element={}> */}
-        {/* <Route index element={<h1>Home Page</h1>} /> */}
-        <Route path="search-candidate" element={<CandidateSearchPage />} />
-        {/* <Route path="search-candidate" element={<CandidateSearchPage />} /> */}
+        <Route path='/' element={<CandidateSearchPage />} />
         <Route path="add-candidate" element={<CandidateForm />} />
-
-        {/* </Route> */}
       </Routes>
     </Router>
   );

@@ -7,7 +7,7 @@ import 'primereact/resources/primereact.min.css'; // PrimeReact core CSS
 import 'primeicons/primeicons.css'; // PrimeIcons
 import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS
 
-const CandidateTable = () => {
+const CandidateSearchPage = () => {
     const [candidates, setCandidates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,12 +16,6 @@ const CandidateTable = () => {
     useEffect(() => {
         fetch('http://localhost:8080/candidates')
             .then((response) => response.json())
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
             .then((data) => {
                 const transformedData = data.map((candidate) => ({
                     id: candidate.id,
@@ -159,4 +153,4 @@ const CandidateTable = () => {
     );
 };
 
-export default CandidateTable;
+export default CandidateSearchPage;
