@@ -9,12 +9,12 @@ const AdminNavbar = () => {
   return (
     <Navbar expand="lg" bg="dark" data-bs-theme="dark">
       <Container>
-        <Navbar.Brand href="#home">Bench Management</Navbar.Brand>
+        <Navbar.Brand href="/">Bench Management</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
-            <Nav.Link href="#link">Link</Nav.Link>
+            <Nav.Link href="/">Home</Nav.Link>
+            <Nav.Link href="/">Link</Nav.Link>
             <NavDropdown title="Candidate" id="basic-nav-dropdown">
               <NavDropdown.Item as={Link} to="/add-candidate">
                 Add Candidate

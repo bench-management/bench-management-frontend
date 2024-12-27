@@ -6,12 +6,16 @@ import 'primereact/resources/themes/saga-blue/theme.css'; // PrimeReact theme
 import 'primereact/resources/primereact.min.css'; // PrimeReact core CSS
 import 'primeicons/primeicons.css'; // PrimeIcons
 import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS
+import { Link, useNavigate } from 'react-router-dom'; // React Router for navigation
 
 const CandidateSearchPage = () => {
     const [candidates, setCandidates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filters, setFilters] = useState({});
+    const [editMode, setEditMode] = useState(false);
+
+    const navigate = useNavigate(); // Navigation function
 
     useEffect(() => {
         fetch('http://localhost:8080/candidates')
@@ -58,6 +62,7 @@ const CandidateSearchPage = () => {
     const renderFilterInput = (field) => (
         <InputText
             className="form-control form-control-sm"
+            style={{ minWidth: '150px' }} // Set minimum width for the search bar
             value={filters[field]?.value || ''}
             onChange={(e) => onFilterChange(field, e.target.value)}
             placeholder={`Search by ${field}`}
@@ -74,17 +79,30 @@ const CandidateSearchPage = () => {
 
     // Function to format the column names into a more readable form
     const formatColumnName = (name) => {
-        // Add space between words, capitalize first letter of each word
         return name
             .replace(/([a-z0-9])([A-Z])/g, '$1 $2') // Insert space before uppercase letters
             .replace(/^([a-z])/g, (char) => char.toUpperCase()); // Capitalize first letter
+    };
+
+    const handleEditClick = () => {
+        setEditMode(!editMode);
+    };
+
+    const renderEditButton = (rowData) => {
+        return (
+            <button
+                className="btn btn-primary btn-sm"
+                onClick={() => navigate(`/edit-candidate/${rowData.id}`)}
+            >
+                Edit
+            </button>
+        );
     };
 
     if (loading) {
         return (
             <div className="container text-center mt-5">
                 <div className="spinner-border text-primary" role="status">
-                    <span className="sr-only">Loading...</span>
                 </div>
             </div>
         );
@@ -101,7 +119,23 @@ const CandidateSearchPage = () => {
     }
 
     return (
-        <div className="container mt-5">
+        <div className="container mt-5 bg-light">
+            {/* Header with Add and Edit Buttons */}
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <Link
+                    className="btn btn-success"
+                    to="/add-candidate"
+                >
+                    Add-Candidate
+                </Link>
+                <button
+                    className="btn btn-warning"
+                    onClick={handleEditClick}
+                >
+                    {editMode ? 'Cancel Edit' : 'Edit'}
+                </button>
+            </div>
+
             <h1 className="text-center mb-4">Candidate List</h1>
             <div className="card shadow-sm">
                 <div className="card-body">
@@ -113,6 +147,14 @@ const CandidateSearchPage = () => {
                         filterDisplay="row"
                         className="table table-striped table-bordered table-hover text-center"
                     >
+                        {/* Render Edit Button Column first if Edit Mode is Enabled */}
+                        {editMode && (
+                            <Column
+                                header="Actions"
+                                body={renderEditButton}
+                                style={{ textAlign: 'center', width: '100px' }}
+                            />
+                        )}
                         {candidates.length > 0 &&
                             Object.keys(candidates[0]).map((key) => (
                                 <Column
@@ -130,8 +172,8 @@ const CandidateSearchPage = () => {
                                         </div>
                                     }
                                     filter
-                                    filterMatchMode="custom" // Use custom filter
-                                    filterFunction={customFilter} // Apply custom filter function
+                                    filterMatchMode="custom"
+                                    filterFunction={customFilter}
                                     filterElement={renderFilterInput(key)}
                                     filterField={key}
                                     bodyStyle={{
