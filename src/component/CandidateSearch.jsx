@@ -8,7 +8,7 @@ import 'primeicons/primeicons.css'; // PrimeIcons
 import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS
 import { Link, useNavigate } from 'react-router-dom'; // React Router for navigation
 
-const CandidateSearchPage = () => {
+const CandidateSearch = () => {
     const [candidates, setCandidates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -195,4 +195,4 @@ const CandidateSearchPage = () => {
     );
 };
 
-export default CandidateSearchPage;
+export default CandidateSearch;

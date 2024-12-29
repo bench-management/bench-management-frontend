@@ -1,17 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Form, Card, Button, Container } from 'react-bootstrap';
+import axios from 'axios';
 
-function EditCandidateForm({ onSave }) {
-  const { id: candidateId } = useParams(); // Candidate ID from URL
+function EditCandidateForm() {
+  const { id: candidateId } = useParams();
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCandidate = async () => {
       try {
         const response = await fetch(
-          `https://676a5c79863eaa5ac0de18c9.mockapi.io/search/candidate/searchCandidate/${candidateId}`
+          `http://localhost:8080/candidates/id/${candidateId}`
         );
         const data = await response.json();
         setFormData(data); // Load candidate data
@@ -58,9 +61,29 @@ function EditCandidateForm({ onSave }) {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    onSave(formData); // Save form data
+
+    // Format the data to match the backend model
+    const formattedData = formData;
+
+    try {
+      const response = await axios.put("http://localhost:8080/candidates/update", formattedData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      // setSuccess(true);
+      console.log("Candidate updated successfully:", response.data);
+
+      // Clear the form for new input
+      setFormData({});
+
+      navigate('/')
+    } catch (err) {
+      console.error("Error updating candidate data:", err);
+      // setError("Failed to submit candidate data. Please try again.");
+    }
   };
 
   if (loading) {
