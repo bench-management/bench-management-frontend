@@ -23,6 +23,7 @@ const CandidateSearch = () => {
             .then((data) => {
                 const transformedData = data.map((candidate) => ({
                     id: candidate.id,
+                    empId:candidate.empId,
                     name: candidate.name,
                     skill: candidate.skill,
                     pastExperience: candidate.pastExperience,
@@ -156,7 +157,9 @@ const CandidateSearch = () => {
                             />
                         )}
                         {candidates.length > 0 &&
-                            Object.keys(candidates[0]).map((key) => (
+                            Object.keys(candidates[0]).map((key) => {
+                                if(key === 'id') return;
+                                return (
                                 <Column
                                     key={key}
                                     field={key}
@@ -187,7 +190,7 @@ const CandidateSearch = () => {
                                         marginBottom: '5px',
                                     }}
                                 />
-                            ))}
+                            )})}
                     </DataTable>
                 </div>
             </div>

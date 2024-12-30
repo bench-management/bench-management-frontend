@@ -1,24 +1,56 @@
-import { useState } from 'react';
-import { Form, Card, Button } from 'react-bootstrap';
-import axios from 'axios';
+import { useState } from "react";
+import { Form, Card, Button } from "react-bootstrap";
+import axios from "axios";
 
 function CandidateForm() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
+
+    
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.empId) newErrors.empId = "Employee ID is required.";
+    if (!formData.name) newErrors.name = "Candidate Name is required.";
+    if (!formData.skill) newErrors.skill = "Skills are required.";
+    if (!formData.baseLocation)
+      newErrors.baseLocation = "Base Location is required.";
+    if (!formData.status) newErrors.status = "Status is required.";
+    if (formData.pastExperience && formData.pastExperience < 0) {
+      newErrors.pastExperience = "Past Experience cannot be negative.";
+    }
+    if (!formData.projectType)
+      newErrors.projectType = "Project Type is required.";
+    if (!formData.onBench) newErrors.onBench = "On Bench status is required.";
+
+    return newErrors;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Format the data to match the backend model
+    // Validate the form
+    const newErrors = validateForm();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      window.alert("Please fix the errors in the form before submitting.");
+      return;
+    }
+
     const formattedData = {
       ...formData,
       onBench: formData.onBench === "yes",
@@ -28,57 +60,73 @@ function CandidateForm() {
     };
 
     try {
-      const response = await axios.post("http://localhost:8080/candidates", formattedData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:8080/candidates",
+        formattedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setSuccess(true);
       console.log("Candidate submitted successfully:", response.data);
-
-      // Clear the form for new input
       setFormData({});
     } catch (err) {
       console.error("Error submitting candidate data:", err);
-      setError("Failed to submit candidate data. Please try again.");
+      window.alert("Failed to submit candidate data. Please try again.");
     }
   };
 
   return (
     <div
       className="d-flex justify-content-center align-items-center"
-      style={{ minHeight: '100vh' }}
+      style={{ minHeight: "100vh" }}
     >
-      <Card style={{ width: '80%', maxWidth: '800px' }} className="p-4">
+      <Card style={{ width: "80%", maxWidth: "800px" }} className="p-4">
         <Card.Body>
           <h3 className="text-center mb-4">Candidate Details Form</h3>
-          {error && <div className="alert alert-danger">{error}</div>}
+
           {success && (
             <div className="alert alert-success">
               Candidate submitted successfully!
             </div>
           )}
+
           <Form onSubmit={handleSubmit}>
+            
             <Form.Group className="mb-3" controlId="formGroupEmpId">
               <Form.Label>Employee ID:</Form.Label>
+              
               <Form.Control
                 type="text"
                 name="empId"
-                value={formData.empId || ''}
+                value={formData.empId || ""}
                 placeholder="Enter employee ID"
                 onChange={handleChange}
+                isInvalid={!!errors.empId}
               />
+
+              <Form.Control.Feedback type="invalid">
+                {errors.empId}
+              </Form.Control.Feedback>
+              
             </Form.Group>
+
 
             <Form.Group className="mb-3" controlId="formGroupName">
               <Form.Label>Candidate Name:</Form.Label>
               <Form.Control
                 type="text"
                 name="name"
-                value={formData.name || ''}
+                value={formData.name || ""}
                 placeholder="Enter candidate name"
                 onChange={handleChange}
+                isInvalid={!!errors.name}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.name}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formGroupSkills">
@@ -86,21 +134,14 @@ function CandidateForm() {
               <Form.Control
                 type="text"
                 name="skill"
-                value={formData.skill || ''}
+                value={formData.skill || ""}
                 placeholder="Enter skills"
                 onChange={handleChange}
+                isInvalid={!!errors.skill}
               />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupPastExperience">
-              <Form.Label>Past Experience (in years):</Form.Label>
-              <Form.Control
-                type="number"
-                name="pastExperience"
-                value={formData.pastExperience || ''}
-                placeholder="Enter past experience"
-                onChange={handleChange}
-              />
+              <Form.Control.Feedback type="invalid">
+                {errors.skill}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formGroupBaseLocation">
@@ -108,10 +149,14 @@ function CandidateForm() {
               <Form.Control
                 type="text"
                 name="baseLocation"
-                value={formData.baseLocation || ''}
+                value={formData.baseLocation || ""}
                 placeholder="Enter base location"
                 onChange={handleChange}
+                isInvalid={!!errors.baseLocation}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.baseLocation}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formGroupStatus">
@@ -119,56 +164,44 @@ function CandidateForm() {
               <Form.Control
                 type="text"
                 name="status"
-                value={formData.status || ''}
+                value={formData.status || ""}
                 placeholder="Enter status"
                 onChange={handleChange}
+                isInvalid={!!errors.status}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.status}
+              </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formGroupClientId">
-              <Form.Label>Client ID:</Form.Label>
+            <Form.Group className="mb-3" controlId="formGroupExperience">
+              <Form.Label>Past Experience (in years):</Form.Label>
+              <Form.Control
+                type="number"
+                name="pastExperience"
+                value={formData.pastExperience || ""}
+                placeholder="Enter past experience"
+                onChange={handleChange}
+                isInvalid={!!errors.pastExperience}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.pastExperience}
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formGroupProjectType">
+              <Form.Label>Project Type:</Form.Label>
               <Form.Control
                 type="text"
-                name="clientId"
-                value={formData.clientId || ''}
-                placeholder="Enter client ID"
+                name="projectType"
+                value={formData.projectType || ""}
+                placeholder="Enter project type"
                 onChange={handleChange}
+                isInvalid={!!errors.projectType}
               />
-            </Form.Group>
-
-            <Form.Group
-              className="mb-3"
-              controlId="formGroupTentativeOnboardingDate"
-            >
-              <Form.Label>Tentative Onboarding Date:</Form.Label>
-              <Form.Control
-                type="date"
-                name="tentativeOnboardingDate"
-                value={formData.tentativeOnboardingDate || ''}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupRemarks">
-              <Form.Label>Remarks:</Form.Label>
-              <Form.Control
-                as="textarea"
-                name="remarks"
-                rows={3}
-                value={formData.remarks || ''}
-                placeholder="Enter remarks"
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupAccoliteDOJ">
-              <Form.Label>Accolite DOJ:</Form.Label>
-              <Form.Control
-                type="date"
-                name="accoliteDoj"
-                value={formData.accoliteDoj || ''}
-                onChange={handleChange}
-              />
+              <Form.Control.Feedback type="invalid">
+                {errors.projectType}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formGroupOnBench">
@@ -176,157 +209,17 @@ function CandidateForm() {
               <Form.Control
                 as="select"
                 name="onBench"
-                value={formData.onBench || ''}
+                value={formData.onBench || ""}
                 onChange={handleChange}
+                isInvalid={!!errors.onBench}
               >
                 <option value="">Select</option>
                 <option value="yes">Yes</option>
                 <option value="no">No</option>
               </Form.Control>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupBenchStartDate">
-              <Form.Label>Bench Start Date:</Form.Label>
-              <Form.Control
-                type="date"
-                name="benchStartDate"
-                value={formData.benchStartDate || ''}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupLWDInAccolite">
-              <Form.Label>LWD in Accolite:</Form.Label>
-              <Form.Control
-                type="date"
-                name="lwdInAccolite"
-                value={formData.lwdInAccolite || ''}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupMentorshipRating">
-              <Form.Label>Mentorship Rating:</Form.Label>
-              <Form.Control
-                as="select"
-                name="mentorshipRating"
-                value={formData.mentorshipRating || ''}
-                onChange={handleChange}
-              >
-                <option value="">Select</option>
-                <option value="5">5</option>
-                <option value="4">4</option>
-                <option value="3">3</option>
-                <option value="2">2</option>
-                <option value="1">1</option>
-              </Form.Control>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupMentorId">
-              <Form.Label>Mentor ID:</Form.Label>
-              <Form.Control
-                type="text"
-                name="mentorId"
-                value={formData.mentorId || ''}
-                placeholder="Enter mentor ID"
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupProjectType">
-              <Form.Label>Project Type:</Form.Label>
-              <Form.Control
-                as="select"
-                name="projectType"
-                value={formData.projectType || ''}
-                onChange={handleChange}
-              >
-                <option value="">Select</option>
-                <option value="bfsi">BFSI</option>
-                <option value="healthcare">Healthcare</option>
-                <option value="others">Others</option>
-              </Form.Control>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupProjectAllocationStatus">
-              <Form.Label>Project Allocation Status:</Form.Label>
-              <Form.Control
-                as="select"
-                name="projectAllocationStatus"
-                value={formData.projectAllocationStatus || ''}
-                onChange={handleChange}
-              >
-                <option value="">Select</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </Form.Control>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupCurrentLocation">
-              <Form.Label>Current Location:</Form.Label>
-              <Form.Control
-                type="text"
-                name="currentLocation"
-                value={formData.currentLocation || ''}
-                placeholder="Enter current location"
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupMentorship">
-              <Form.Label>Mentorship:</Form.Label>
-              <Form.Control
-                as="select"
-                name="mentorship"
-                value={formData.mentorship || ''}
-                onChange={handleChange}
-              >
-                <option value="">Select</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </Form.Control>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupTHLink">
-              <Form.Label>TH Link:</Form.Label>
-              <Form.Control
-                type="url"
-                name="thLink"
-                value={formData.thLink || ''}
-                placeholder="Enter Tech Hiring link"
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupSelectedDate">
-              <Form.Label>Selected Date:</Form.Label>
-              <Form.Control
-                type="date"
-                name="selectedDate"
-                value={formData.selectedDate || ''}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupOnboardingDate">
-              <Form.Label>Onboarding Date:</Form.Label>
-              <Form.Control
-                type="date"
-                name="onboardingDate"
-                value={formData.onboardingDate || ''}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formGroupInterviewIds">
-              <Form.Label>Interview IDs:</Form.Label>
-              <Form.Control
-                type="text"
-                name="interviewIds"
-                value={formData.interviewIds || ''}
-                placeholder="Enter interview IDs"
-                onChange={handleChange}
-              />
+              <Form.Control.Feedback type="invalid">
+                {errors.onBench}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Button variant="primary" type="submit" className="w-100 mt-3">
