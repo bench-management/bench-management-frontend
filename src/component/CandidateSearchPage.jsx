@@ -168,7 +168,8 @@ const CandidateSearchPage = () => {
                                                 margin: '5px 0',
                                             }}
                                         >
-                                            {formatColumnName(key)}
+                                            {key === 'id' ? 'Employee ID' : formatColumnName(key)}
+                                            
                                         </div>
                                     }
                                     filter
