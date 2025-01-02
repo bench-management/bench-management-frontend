@@ -49,7 +49,7 @@ function EditCandidateForm() {
   const handleAddArrayItem = (field) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [field]: [...(prevFormData[field] || []), ""],
+      [field]: [...(prevFormData[field] || []), ''],
     }));
   };
 
@@ -66,22 +66,25 @@ function EditCandidateForm() {
 
     // Format the data to match the backend model
     const formattedData = formData;
-
     try {
-      const response = await axios.put("http://localhost:8080/candidates/update", formattedData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.put(
+        'http://localhost:8080/candidates/update',
+        formattedData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       // setSuccess(true);
-      console.log("Candidate updated successfully:", response.data);
+      console.log('Candidate updated successfully:', response.data);
 
       // Clear the form for new input
       setFormData({});
 
-      navigate('/')
+      navigate('/');
     } catch (err) {
-      console.error("Error updating candidate data:", err);
+      console.error('Error updating candidate data:', err);
       // setError("Failed to submit candidate data. Please try again.");
     }
   };
@@ -108,7 +111,10 @@ function EditCandidateForm() {
                   <Form.Group className="mb-3" key={key}>
                     <Form.Label>{key}:</Form.Label>
                     {value.map((item, index) => (
-                      <div key={index} className="d-flex align-items-center mb-2">
+                      <div
+                        key={index}
+                        className="d-flex align-items-center mb-2"
+                      >
                         <Form.Control
                           type="text"
                           value={item}
