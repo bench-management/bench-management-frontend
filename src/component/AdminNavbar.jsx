@@ -5,7 +5,7 @@ import '../styles/AdminNavbar.scss';
 
 const AdminNavbar = () => {
   return (
-    <Navbar expand="lg" bg="dark" data-bs-theme="dark">
+    <Navbar  expand="lg" bg="dark" data-bs-theme="dark">
       <Container>
         <Navbar.Brand href="/">Bench Management</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
