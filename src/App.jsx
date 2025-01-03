@@ -8,6 +8,7 @@ import Home from './component/Home';
 import InterviewsDisplayTable from './component/InterviewsDisplayTable';
 import AddInterviewForm from './component/AddInterviewForm';
 
+
 function App() {
   return (
     <Router>
@@ -19,6 +20,7 @@ function App() {
         <Route path="interview" element={<InterviewsDisplayTable />} />
         <Route path="add-interview" element={<AddInterviewForm />} />
         <Route path="/" element={<Home />} />
+    
       </Routes>
     </Router>
   );
