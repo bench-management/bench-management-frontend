@@ -40,9 +40,8 @@ const CandidateSearch = () => {
         }));
         setCandidates(transformedData);
 
-        // Initialize filters for each field
         const initialFilters = {};
-        Object.keys(transformedData[0]).forEach((key) => {
+        Object.keys(transformedData[0] || {}).forEach((key) => {
           initialFilters[key] = { value: '' };
         });
         setFilters(initialFilters);
@@ -63,14 +62,13 @@ const CandidateSearch = () => {
   const renderFilterInput = (field) => (
     <InputText
       className="form-control form-control-sm"
-      style={{ minWidth: '150px' }} // Set minimum width for the search bar
       value={filters[field]?.value || ''}
       onChange={(e) => onFilterChange(field, e.target.value)}
       placeholder={`Search by ${field}`}
+      style={{ minWidth: '150px' }} // Ensure the input field has a minimum width
     />
   );
 
-  // Custom filter function for partial matching (contains)
   const customFilter = (value, filter) => {
     if (filter && value) {
       return value.toString().toLowerCase().includes(filter.toLowerCase());
@@ -78,39 +76,37 @@ const CandidateSearch = () => {
     return true;
   };
 
-  // Function to format the column names into a more readable form
   const formatColumnName = (name) => {
     return name
-      .replace(/([a-z0-9])([A-Z])/g, '$1 $2') // Insert space before uppercase letters
-      .replace(/^([a-z])/g, (char) => char.toUpperCase()); // Capitalize first letter
+      .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+      .replace(/^([a-z])/g, (char) => char.toUpperCase());
   };
 
   const handleEditClick = () => {
     setEditMode(!editMode);
   };
 
-  const renderEditButton = (rowData) => {
-    return (
-      <button
-        className="btn btn-primary btn-sm"
-        onClick={() => navigate(`/edit-candidate/${rowData.id}`)}
-      >
-        Edit
-      </button>
-    );
-  };
+  const renderEditButton = (rowData) => (
+    <button
+      className="btn btn-primary btn-sm"
+      onClick={() => navigate(`/edit-candidate/${rowData.id}`)}
+    >
+      Edit
+    </button>
+  );
 
   if (loading) {
     return (
-      <div className="container text-center mt-5">
+      <div className="d-flex justify-content-center align-items-center vh-100">
         <div className="spinner-border text-primary" role="status"></div>
+        <p className="mt-3">Loading candidates, please wait...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="container text-center mt-5">
+      <div className="d-flex justify-content-center align-items-center vh-100">
         <div className="alert alert-danger" role="alert">
           Error: {error}
         </div>
@@ -119,75 +115,76 @@ const CandidateSearch = () => {
   }
 
   return (
-    <div className="container mt-5 bg-light">
-      {/* Header with Add and Edit Buttons */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <Link className="btn btn-success" to="/add-candidate">
-          Add-Candidate
-        </Link>
-        <button className="btn btn-warning" onClick={handleEditClick}>
-          {editMode ? 'Cancel Edit' : 'Edit'}
-        </button>
+    <div className="container mt-4">
+      {/* Header Section */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="mb-0 text-primary">Candidate List</h2>
+        <div>
+          <button className="btn btn-warning me-2" onClick={handleEditClick}>
+            {editMode ? 'Cancel Edit' : 'Edit'}
+          </button>
+          <Link className="btn btn-success" to="/add-candidate">
+            Add Candidate
+          </Link>
+        </div>
       </div>
 
-      <h1 className="text-center mb-4">Candidate List</h1>
+      {/* DataTable */}
       <div className="card shadow-sm">
-        <div className="card-body">
+        <div className="card-body p-2"> {/* Added padding here */}
           <DataTable
             value={candidates}
             paginator
             rows={10}
+            responsiveLayout="scroll"
             filters={filters}
             filterDisplay="row"
-            className="table table-striped table-bordered table-hover text-center"
+            className="table table-striped table-hover text-center"
           >
-            {/* Render Edit Button Column first if Edit Mode is Enabled */}
             {editMode && (
               <Column
                 header="Actions"
                 body={renderEditButton}
-                style={{ textAlign: 'center', width: '100px' }}
+                style={{ textAlign: 'center', width: '150px', paddingRight: '20px' }} // Adjusted width and added padding
               />
             )}
             {candidates.length > 0 &&
               Object.keys(candidates[0]).map((key) => {
-                if (key === 'id') return;
+                if (key === 'id') return null;
                 return (
                   <Column
                     key={key}
                     field={key}
-                    header={
-                      <div
-                        className="font-weight-bold"
-                        style={{
-                          padding: '10px',
-                          margin: '5px 0',
-                        }}
-                      >
-                        {formatColumnName(key)}
-                      </div>
-                    }
+                    header={<span className="text-primary">{formatColumnName(key)}</span>}
                     filter
                     filterMatchMode="custom"
                     filterFunction={customFilter}
                     filterElement={renderFilterInput(key)}
-                    filterField={key}
-                    bodyStyle={{
-                      textAlign: 'center',
-                      verticalAlign: 'middle',
-                      padding: '10px',
-                    }}
-                    headerStyle={{
-                      textAlign: 'center',
-                      padding: '15px 10px',
-                      marginBottom: '5px',
-                    }}
+                    bodyStyle={{ textAlign: 'center', verticalAlign: 'middle', padding: '10px' }} // Added padding here
+                    headerStyle={{ textAlign: 'center', padding: '10px' }} // Added padding here
                   />
                 );
               })}
           </DataTable>
         </div>
       </div>
+
+      {/* Floating Add Button */}
+      <Link
+        to="/add-candidate"
+        className="btn btn-success rounded-circle position-fixed shadow"
+        style={{
+          bottom: '20px',
+          right: '20px',
+          width: '60px',
+          height: '60px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <i className="pi pi-plus" style={{ fontSize: '24px' }}></i>
+      </Link>
     </div>
   );
 };

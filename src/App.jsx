@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import CandidateForm from './component/CandidateForm';
+import CandidateForm from './component/candidateForm';
 import AdminNavbar from './component/AdminNavbar';
 import CandidateSearch from './component/CandidateSearch';
 import EditCandidateForm from './component/EditCandidateForm';
