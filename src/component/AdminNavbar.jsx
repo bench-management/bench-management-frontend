@@ -1,32 +1,20 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import '../styles/AdminNavbar.scss';
-import { Link } from 'react-router-dom';
-
+import logo from '../img/benchIcon.gif'
 const AdminNavbar = () => {
   return (
-    <Navbar expand="lg" bg="dark" data-bs-theme="dark">
+    <Navbar  expand="lg" bg="dark" data-bs-theme="dark">
       <Container>
+        <img src={logo} alt='logo' style={{height:'45px', marginRight:'15px'}} />
         <Navbar.Brand href="/">Bench Management</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/">Home</Nav.Link>
-            <Nav.Link href="/">Link</Nav.Link>
-            <NavDropdown title="Candidate" id="basic-nav-dropdown">
-              <NavDropdown.Item as={Link} to="/add-candidate">
-                Add Candidate
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/delete-candidate">
-                Delete Candidate
-              </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} to="/search-candidate">
-                Search Candidate
-              </NavDropdown.Item>
-            </NavDropdown>
+            <Nav.Link href="/">Candidate</Nav.Link>
+            <Nav.Link href="/interview">Interview</Nav.Link>
+
           </Nav>
         </Navbar.Collapse>
       </Container>

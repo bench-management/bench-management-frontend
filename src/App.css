@@ -1,0 +1,34 @@
+
+:root {
+    --light-bg: #13140b;
+    --primary-color: #83B4FF;
+    --secondary-color: #5A72A0;
+    --dark-bg: #1A2130;
+    --text-light: #FDFFE2;
+    --text-dark: #1A2130;
+  }
+  
+  
+  /* Navbar styling */
+  .navbar {
+    background-color: var(--dark-bg);
+    border-bottom: 2px solid var(--secondary-color);
+  }
+  
+  .navbar-brand, .nav-link {
+    color: var(--text-light) !important;
+  }
+  
+  .nav-link:hover {
+    color: var(--primary-color) !important;
+  }
+  
+  /* Fullscreen center class */
+  .fullscreen-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  
