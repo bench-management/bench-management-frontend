@@ -16,14 +16,14 @@ function App() {
     <Router>
       <AdminNavbar />
       <Routes>
-        {/* <Route path="search-candidate" element={<CandidateSearch />} />
+        <Route path="search-candidate" element={<CandidateSearch />} />
         <Route path="add-candidate" element={<CandidateForm />} />
         <Route path="edit-candidate/:id" element={<EditCandidateForm />} />
         <Route path="interview" element={<InterviewsDisplayTable />} />
         <Route path="add-interview" element={<AddInterviewForm />} />
         <Route path="edit-interview/:id" element={<EditInterviewForm />} />
-        <Route path="/" element={<Home />} /> */}
-        <Route path="/" element={<CandidateTable />} />
+        <Route path="/" element={<Home />} />
+        {/* <Route path="/" element={<CandidateTable />} /> */}
 
       </Routes>
     </Router>
