@@ -58,7 +58,7 @@ function AddInterviewForm() {
   const fetchCandidates = async (searchTerm) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/candidates/search?searchTerm=${searchTerm}`
+        `http://localhost:8080/api/candidates/search?searchTerm=${searchTerm}`
       );
       setCandidates(response.data);
     } catch (error) {
@@ -98,7 +98,7 @@ function AddInterviewForm() {
 
     try {
       const response = await axios.post(
-        'http://localhost:8080/interviews',
+        'http://localhost:8080/api/interviews',
         formData,
         {
           headers: { 'Content-Type': 'application/json' },

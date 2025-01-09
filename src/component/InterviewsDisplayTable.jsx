@@ -18,7 +18,7 @@ const InterviewsDisplayTable = () => {
   const navigate = useNavigate(); // Navigation function
 
   useEffect(() => {
-    fetch('http://localhost:8080/interviews')
+    fetch('http://localhost:8080/api/interviews')
       .then((response) => response.json())
       .then((data) => {
         setInterviews(data);

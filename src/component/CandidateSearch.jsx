@@ -18,7 +18,7 @@ const CandidateSearch = () => {
   const navigate = useNavigate(); // Navigation function
 
   useEffect(() => {
-    fetch('http://localhost:8080/candidates')
+    fetch('http://localhost:8080/api/candidates')
       .then((response) => response.json())
       .then((data) => {
         const transformedData = data.map((candidate) => ({

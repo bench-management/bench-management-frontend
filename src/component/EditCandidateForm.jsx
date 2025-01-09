@@ -14,7 +14,7 @@ function EditCandidateForm() {
     const fetchCandidate = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/candidates/id/${candidateId}`
+          `http://localhost:8080/api/candidates/${candidateId}`
         );
         const data = await response.json();
         setFormData(data); // Load candidate data
@@ -68,7 +68,7 @@ function EditCandidateForm() {
     const formattedData = formData;
     try {
       const response = await axios.put(
-        'http://localhost:8080/candidates/update',
+        'http://localhost:8080/api/candidates/update',
         formattedData,
         {
           headers: {
