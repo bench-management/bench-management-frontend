@@ -1,26 +1,80 @@
-import React, { useEffect, useState } from "react";
-import { Table, Input, Radio, Spin, Alert } from "antd";
+import { useEffect, useState } from "react";
+import { Table, Input, Spin, Alert } from "antd";
+import PropTypes from "prop-types";
+import { fetchAllCandidates, fetchInterviewsByCandidateId } from "../lib/api";
+import "../css/CandidateTable.css"
 
 const { Search } = Input;
 
 // Sub-Table Component
-const SubTable = ({ type, data, onSearch }) => {
-    const columns = {
-        interviews: [
-            { title: "Interview ID", dataIndex: "interviewId", key: "interviewId" },
-            { title: "Interviewer", dataIndex: "interviewerName", key: "interviewerName" },
-            { title: "Date", dataIndex: "date", key: "date" },
-        ],
-    };
+const SubTable = ({ candidateId, onSearch }) => {
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [interviewData, setInterviewData] = useState([]);
 
-    const filteredData = data.filter((item) =>
+    const fetchInterviews = async (candidateId) => {
+        try {
+            const interviewData = await fetchInterviewsByCandidateId(candidateId)
+            setInterviewData(interviewData);
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        setLoading(true);
+        setError(null);
+        fetchInterviews(candidateId)
+    }, [candidateId]);
+
+    const columns = [
+        { title: "Interview Date", dataIndex: "interviewDate", key: "interviewDate" },
+        { title: "Interviewer Name", dataIndex: "interviewerName", key: "interviewerName" },
+        { title: "Interview Status", dataIndex: "interviewStatus", key: "interviewStatus" },
+        { title: "Department", dataIndex: "department", key: "department" },
+        { title: "Accolite Hiring Manager", dataIndex: "accoliteHiringManager", key: "accoliteHiringManager" },
+        { title: "Client Hiring Manager", dataIndex: "clientHiringManager", key: "clientHiringManager" },
+        { title: "Client Requirement", dataIndex: "clientRequirement", key: "clientRequirement" },
+        { title: "Comments", dataIndex: "comments", key: "comments" },
+        { title: "Project", dataIndex: "project", key: "project" },
+    ];
+
+    const filteredData = interviewData && interviewData.filter((item) =>
         Object.values(item).some((value) =>
             String(value).toLowerCase().includes(onSearch.toLowerCase())
         )
     );
 
-    return <Table columns={columns[type]} dataSource={filteredData} pagination={false} rowKey="interviewId" />;
+    if (error) {
+        return (
+            <Alert
+                message="Error"
+                description={`Failed to load interview details: ${error}`}
+                type="error"
+                showIcon
+                style={{ margin: 20 }}
+            />
+        );
+    }
+
+    return <Table
+        columns={columns}
+        dataSource={filteredData}
+        pagination={false}
+        rowKey="id"
+        loading={loading}
+        className="subtable subtable-header"
+        bordered
+        size="small"
+    />;
 };
+
+SubTable.propTypes = {
+    candidateId: PropTypes.string.isRequired,
+    onSearch: PropTypes.string
+}
 
 // Main Table Component
 const CandidateTable = () => {
@@ -28,43 +82,23 @@ const CandidateTable = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [expandedRowKeys, setExpandedRowKeys] = useState([]);
-    const [subTableType, setSubTableType] = useState("interviews");
     const [mainTableSearch, setMainTableSearch] = useState("");
     const [subTableSearch, setSubTableSearch] = useState("");
 
+    const fetchCandidates = async () => {
+        try {
+            const candidates = await fetchAllCandidates();
+            setCandidates(candidates);
+        } catch (error) {
+            console.log(error)
+            setError(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
     useEffect(() => {
-        fetch("http://localhost:8080/api/candidates")
-            .then((response) => response.json())
-            .then((data) => {
-                const transformedData = data.map((candidate) => ({
-                    id: candidate.id,
-                    empId: candidate.empId,
-                    name: candidate.name,
-                    skill: candidate.skill,
-                    pastExperience: candidate.pastExperience,
-                    baseLocation: candidate.baseLocation,
-                    status: candidate.status,
-                    accoliteDoj: new Date(candidate.accoliteDoj).toLocaleDateString(),
-                    benchStartDate: new Date(candidate.benchStartDate).toLocaleDateString(),
-                    tentativeOnboardingDate: candidate.tentativeOnboardingDate ? new Date(candidate.tentativeOnboardingDate).toLocaleDateString() : null,
-                    remarks: candidate.remarks,
-                    mentorship: candidate.mentorship,
-                    currentLocation: candidate.currentLocation,
-                    thLink: candidate.thLink,
-                    lwdInAccolite: candidate.lwdInAccolite ? new Date(candidate.lwdInAccolite).toLocaleDateString() : null,
-                    projectType: candidate.projectType,
-                    projectAllocationStatus: candidate.projectAllocationStatus,
-                    selectionDate: candidate.selectionDate ? new Date(candidate.selectionDate).toLocaleDateString() : null,
-                    onboardingDate: new Date(candidate.onboardingDate).toLocaleDateString(),
-                    interviews: candidate.interviews || [],
-                }));
-                setCandidates(transformedData);
-                setLoading(false);
-            })
-            .catch((error) => {
-                setError(error.message);
-                setLoading(false);
-            });
+        fetchCandidates()
     }, []);
 
     const handleRowClick = (record) => {
@@ -72,15 +106,6 @@ const CandidateTable = () => {
             prevExpandedKeys.includes(record.id) ? [] : [record.id]
         );
     };
-
-    // Filter main table
-    const filteredCandidates = candidates.filter((candidate) =>
-        Object.values(candidate).some((value) =>
-            typeof value === "string"
-                ? value.toLowerCase().includes(mainTableSearch.toLowerCase())
-                : false
-        )
-    );
 
     const columns = [
         { title: "Employee ID", dataIndex: "empId", key: "empId" },
@@ -95,15 +120,6 @@ const CandidateTable = () => {
         { title: "Remarks", dataIndex: "remarks", key: "remarks" },
     ];
 
-    if (loading) {
-        return (
-            <div style={{ textAlign: "center", marginTop: 50 }}>
-                <Spin size="large" />
-                <p>Loading candidates...</p>
-            </div>
-        );
-    }
-
     if (error) {
         return (
             <Alert
@@ -116,20 +132,21 @@ const CandidateTable = () => {
         );
     }
 
-    return (
-        <div>
-            {/* Type Selection */}
-            <div style={{ marginBottom: 16 }}>
-                <Radio.Group
-                    value={subTableType}
-                    onChange={(e) => setSubTableType(e.target.value)}
-                >
-                    <Radio.Button value="interviews">Interviews</Radio.Button>
-                </Radio.Group>
-            </div>
+    const filteredCandidates = candidates.filter((candidate) =>
+        Object.values(candidate).some((value) =>
+            typeof value === "string"
+                ? value.toLowerCase().includes(mainTableSearch.toLowerCase())
+                : false
+        )
+    );
 
+    return (
+        <div style={{
+            backgroundColor: '#f1e9d1',
+            padding: '2rem'
+        }}>
             {/* Main Table Search */}
-            <div style={{ marginBottom: 16, display: "flex", justifyContent: "flex-end" }}>
+            <div style={{ padding: '1rem', display: "flex", justifyContent: "flex-end" }}>
                 <Search
                     placeholder="Search candidates..."
                     onChange={(e) => setMainTableSearch(e.target.value)}
@@ -141,31 +158,28 @@ const CandidateTable = () => {
             <Table
                 columns={columns}
                 dataSource={filteredCandidates}
+                loading={loading}
+                bordered
+                size="small"
+                className="main-table"
                 expandable={{
                     expandedRowKeys,
                     expandedRowRender: (record) => (
-                        <>
-                            {/* Sub-Table Search */}
-                            <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end" }}>
+                        <div style={{ padding: '1rem 0 3rem', backgroundColor: '#f1e9d1' }}>
+                            <div style={{ padding: '1rem', display: "flex", justifyContent: "flex-end" }}>
                                 <Search
-                                    placeholder={`Search ${subTableType}...`}
+                                    placeholder={`Search...`}
                                     onChange={(e) => setSubTableSearch(e.target.value)}
                                     style={{ width: 300 }}
                                     allowClear
                                 />
                             </div>
-
-                            {/* Sub-Table */}
-                            <SubTable
-                                type={subTableType}
-                                data={record[subTableType]}
-                                onSearch={subTableSearch}
-                            />
-                        </>
+                            <SubTable candidateId={record.id} onSearch={subTableSearch} />
+                        </div>
                     ),
                     rowExpandable: () => true,
                     onExpand: (expanded, record) =>
-                        setExpandedRowKeys(expanded ? [record.id] : []), // Sync with + button
+                        setExpandedRowKeys(expanded ? [record.id] : []),
                 }}
                 rowKey="id"
                 onRow={(record) => ({
