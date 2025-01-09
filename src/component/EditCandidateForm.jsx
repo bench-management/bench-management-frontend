@@ -68,7 +68,7 @@ function EditCandidateForm() {
     const formattedData = formData;
     try {
       const response = await axios.put(
-        'http://localhost:8080/api/candidates/update',
+        `http://localhost:8080/api/candidates/${formattedData.id}`,
         formattedData,
         {
           headers: {
@@ -104,6 +104,7 @@ function EditCandidateForm() {
           <h3 className="text-center mb-4">Edit Candidate</h3>
           <Form onSubmit={handleSubmit}>
             {Object.keys(formData).map((key) => {
+              if (key == 'id' || key == 'interviews') return null;
               const value = formData[key];
               if (Array.isArray(value)) {
                 return (

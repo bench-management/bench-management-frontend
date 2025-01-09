@@ -8,20 +8,29 @@ function AddInterviewForm() {
   });
   const [errors, setErrors] = useState({});
   const [candidates, setCandidates] = useState([]);
+  const [clients, setClients] = useState([]);
   const [success, setSuccess] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [clientSearchTerm, setClientSearchTerm] = useState('');
   const [debounceTimer, setDebounceTimer] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showClientDropdown, setShowClientDropdown] = useState(false);
   const [newComment, setNewComment] = useState('');
 
-  const dropdownRef = useRef(null);
+  const candidateDropdownRef = useRef(null);
+  const clientDropdownRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        (candidateDropdownRef.current && !candidateDropdownRef.current.contains(event.target)) &&
+        (clientDropdownRef.current && !clientDropdownRef.current.contains(event.target))
+      ) {
         setShowDropdown(false);
+        setShowClientDropdown(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -45,12 +54,21 @@ function AddInterviewForm() {
 
     setDebounceTimer(
       setTimeout(() => {
-        if (value) {
-          fetchCandidates(value);
-          setShowDropdown(true);
-        } else {
-          setShowDropdown(false);
-        }
+        fetchCandidates(value);
+        setShowDropdown(true);
+      }, 300)
+    );
+  };
+
+  const handleClientSearchChange = (event) => {
+    clearTimeout(debounceTimer);
+    const value = event.target.value;
+    setClientSearchTerm(value);
+
+    setDebounceTimer(
+      setTimeout(() => {
+        fetchClients(value);
+        setShowClientDropdown(true);
       }, 300)
     );
   };
@@ -66,19 +84,39 @@ function AddInterviewForm() {
     }
   };
 
+  const fetchClients = async (searchTerm) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/clients/search?searchTerm=${searchTerm}`
+      );
+      setClients(response.data);
+    } catch (error) {
+      console.error('Error fetching clients:', error);
+    }
+  };
+
   const selectCandidate = (candidate) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      candidateIdString: candidate.id,
+      candidateId: candidate.id,
     }));
     setSearchTerm(`${candidate.empId} - ${candidate.name}`);
     setShowDropdown(false);
   };
 
+  const selectClient = (client) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      clientId: client.id,
+    }));
+    setClientSearchTerm(`${client.clientId} - ${client.clientName}`);
+    setShowClientDropdown(false);
+  };
+
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.candidateIdString)
-      newErrors.candidateIdString = 'Candidate is required.';
+    if (!formData.candidateId)
+      newErrors.candidateId = 'Candidate is required.';
     if (!formData.clientId) newErrors.clientId = 'Client ID is required.';
     if (!formData.interviewerName)
       newErrors.interviewerName = 'Interviewer name is required.';
@@ -90,9 +128,10 @@ function AddInterviewForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const newErrors = validateForm();
+    console.log('newErrors :>> ', newErrors);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      window.alert('Please fix the errors in the form.');
+      window.alert('Please fix the errors in the form.', newErrors);
       return;
     }
 
@@ -107,6 +146,7 @@ function AddInterviewForm() {
       setSuccess(true);
       setFormData({ comments: [] });
       setSearchTerm('');
+      setClientSearchTerm('');
       console.log('Interview submitted successfully:', response.data);
     } catch (error) {
       console.error('Error submitting interview:', error);
@@ -139,20 +179,23 @@ function AddInterviewForm() {
           )}
 
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" ref={dropdownRef}>
+            {/* Candidate Search */}
+            <Form.Group className="mb-3" ref={candidateDropdownRef}>
               <Form.Label>Search Candidate (empId or name):</Form.Label>
               <Form.Control
                 type="text"
                 value={searchTerm}
                 placeholder="Search by empId or name"
                 onChange={handleSearchChange}
+                onFocus={handleSearchChange}
+                style={{ position: 'relative' }}
               />
               {showDropdown && candidates.length > 0 && (
                 <div
                   className="dropdown-menu show"
                   style={{
                     position: 'absolute',
-                    width: '100%',
+                    width: '80%',
                     maxHeight: '200px',
                     overflowY: 'auto',
                     zIndex: 1000,
@@ -172,21 +215,42 @@ function AddInterviewForm() {
               )}
             </Form.Group>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Client ID:</Form.Label>
+            {/* Client Search */}
+            <Form.Group className="mb-3" ref={clientDropdownRef}>
+              <Form.Label>Search Client (Client ID or name):</Form.Label>
               <Form.Control
                 type="text"
-                name="clientId"
-                value={formData.clientId || ''}
-                placeholder="Enter Client ID"
-                onChange={handleChange}
-                isInvalid={!!errors.clientId}
+                value={clientSearchTerm}
+                placeholder="Search by Client ID or name"
+                onChange={handleClientSearchChange}
+                onFocus={handleClientSearchChange}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.clientId}
-              </Form.Control.Feedback>
+              {showClientDropdown && clients.length > 0 && (
+                <div
+                  className="dropdown-menu show"
+                  style={{
+                    position: 'absolute',
+                    width: '80%',
+                    maxHeight: '200px',
+                    overflowY: 'auto',
+                    zIndex: 1000,
+                  }}
+                >
+                  {clients.map((client) => (
+                    <button
+                      key={client.id}
+                      className="dropdown-item"
+                      type="button"
+                      onClick={() => selectClient(client)}
+                    >
+                      {client.clientId} - {client.clientName}
+                    </button>
+                  ))}
+                </div>
+              )}
             </Form.Group>
 
+            {/* Interview Status */}
             <Form.Group className="mb-3">
               <Form.Label>Interview Status:</Form.Label>
               <Form.Select
@@ -206,6 +270,7 @@ function AddInterviewForm() {
               </Form.Control.Feedback>
             </Form.Group>
 
+            {/* Interviewer Name */}
             <Form.Group className="mb-3">
               <Form.Label>Interviewer Name:</Form.Label>
               <Form.Control
@@ -221,6 +286,22 @@ function AddInterviewForm() {
               </Form.Control.Feedback>
             </Form.Group>
 
+            {/* Interview Date */}
+            <Form.Group className="mb-3">
+              <Form.Label>Interview Date:</Form.Label>
+              <Form.Control
+                type="date"
+                name="interviewDate"
+                value={formData.interviewDate || ''}
+                onChange={handleChange}
+                isInvalid={!!errors.interviewDate}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.interviewDate}
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            {/* Project */}
             <Form.Group className="mb-3">
               <Form.Label>Project:</Form.Label>
               <Form.Control
@@ -232,6 +313,7 @@ function AddInterviewForm() {
               />
             </Form.Group>
 
+            {/* Client Requirement */}
             <Form.Group className="mb-3">
               <Form.Label>Client Requirement:</Form.Label>
               <Form.Control
@@ -243,6 +325,7 @@ function AddInterviewForm() {
               />
             </Form.Group>
 
+            {/* Accolite Hiring Manager */}
             <Form.Group className="mb-3">
               <Form.Label>Accolite Hiring Manager:</Form.Label>
               <Form.Control
@@ -254,6 +337,7 @@ function AddInterviewForm() {
               />
             </Form.Group>
 
+            {/* Client Hiring Manager */}
             <Form.Group className="mb-3">
               <Form.Label>Client Hiring Manager:</Form.Label>
               <Form.Control
@@ -265,6 +349,7 @@ function AddInterviewForm() {
               />
             </Form.Group>
 
+            {/* Department */}
             <Form.Group className="mb-3">
               <Form.Label>Department:</Form.Label>
               <Form.Control
@@ -276,6 +361,7 @@ function AddInterviewForm() {
               />
             </Form.Group>
 
+            {/* Comments */}
             <Form.Group className="mb-3">
               <Form.Label>Comments:</Form.Label>
               <div className="d-flex">

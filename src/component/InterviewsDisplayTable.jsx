@@ -21,7 +21,23 @@ const InterviewsDisplayTable = () => {
     fetch('http://localhost:8080/api/interviews')
       .then((response) => response.json())
       .then((data) => {
-        setInterviews(data);
+
+        const transformedData = data.map((item) => ({
+          id: item.id,
+          candidateId: item.candidateId,
+          clientId: item.clientId,
+          interviewStatus: item.interviewStatus,
+          interviewerName: item.interviewerName,
+          interviewDate: new Date(item.interviewDate).toLocaleString(), // Format the date
+          department: item.department,
+          accoliteHiringManager: item.accoliteHiringManager,
+          clientHiringManager: item.clientHiringManager,
+          clientRequirement: item.clientRequirement,
+          comments: item.comments.join(', '), // Convert array to a string for display
+          project: item.project,
+        }));
+
+        setInterviews(transformedData);
 
         const initialFilters = {};
         Object.keys(data[0] || {}).forEach((key) => {
@@ -77,10 +93,12 @@ const InterviewsDisplayTable = () => {
     </button>
   );
 
-  const candidateTemplate = (rowData) => {
-    const candidate = rowData.candidateId;
-    return candidate ? `${candidate.name} (${candidate.empId})` : 'N/A';
-  };
+  // const candidateTemplate = (rowData) => {
+  //   //TODO:
+  //   // const candidate = rowData.candidateId;
+  //   // return candidate ? `${candidate.name} (${candidate.empId})` : 'N/A';
+  //   return rowData.candidateId
+  // };
 
   if (loading) {
     return (
@@ -132,23 +150,23 @@ const InterviewsDisplayTable = () => {
               <Column
                 header="Actions"
                 body={renderEditButton}
-                style={{ textAlign: 'center', width: '100px' }}
+                style={{ textAlign: 'center', width: '150px', padding: '10px' }} // Adjusted width and added padding
               />
             )}
             {interviews.length > 0 &&
               Object.keys(interviews[0]).map((key) => {
-                if (key === 'candidateId') {
-                  return (
-                    <Column
-                      key={key}
-                      field={key}
-                      header={<div className="font-weight-bold">Candidate</div>}
-                      body={candidateTemplate}
-                      bodyStyle={{ textAlign: 'center', verticalAlign: 'middle', padding: '10px' }}
-                      headerStyle={{ textAlign: 'center', padding: '10px', color: '#007bff' }}
-                    />
-                  );
-                }
+                // if (key === 'candidateId') {
+                //   return (
+                //     <Column
+                //       key={key}
+                //       field={key}
+                //       header={<div className="font-weight-bold">Candidate</div>}
+                //       body={candidateTemplate}
+                //       bodyStyle={{ textAlign: 'center', verticalAlign: 'middle', padding: '10px' }}
+                //       headerStyle={{ textAlign: 'center', padding: '10px', color: '#007bff' }}
+                //     />
+                //   );
+                // }
                 return (
                   <Column
                     key={key}
@@ -158,8 +176,8 @@ const InterviewsDisplayTable = () => {
                     filterMatchMode="custom"
                     filterFunction={customFilter}
                     filterElement={renderFilterInput(key)}
-                    bodyStyle={{ textAlign: 'center', verticalAlign: 'middle', padding: '10px' }} // Added padding here
-                    headerStyle={{ textAlign: 'center', padding: '10px' }} // Added padding here
+                    bodyStyle={{ textAlign: 'center', verticalAlign: 'middle', padding: '10px', border: '1px solid', borderColor: '#D0DDD0' }} // Added padding here
+                    headerStyle={{ textAlign: 'center', padding: '10px', border: '1px solid', borderColor: '#D0DDD0' }} // Added padding here
                   />
                 );
               })}

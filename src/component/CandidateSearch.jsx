@@ -21,23 +21,54 @@ const CandidateSearch = () => {
     fetch('http://localhost:8080/api/candidates')
       .then((response) => response.json())
       .then((data) => {
-        const transformedData = data.map((candidate) => ({
-          id: candidate.id,
-          empId: candidate.empId,
-          name: candidate.name,
-          skill: candidate.skill,
-          pastExperience: candidate.pastExperience,
-          baseLocation: candidate.baseLocation,
-          status: candidate.status,
-          client: candidate.clientId,
-          projectType: candidate.projectType,
-          onBench: candidate.onBench,
-          benchStartingDate: candidate.benchStartDate,
-          tentativeOnboarding_Date: candidate.tentativeOnboardingDate,
-          remarks: candidate.remarks,
-          thLink: candidate.thLink,
-          interviewId: candidate.interviewIds,
-        }));
+        const transformedData = data.map((candidate) => {
+          const currentDate = new Date();
+
+          // Parse dates
+          const benchStartDate = new Date(candidate.benchStartDate);
+          const onboardingDate = candidate.onboardingDate ? new Date(candidate.onboardingDate) : null;
+          const accoliteDoj = new Date(candidate.accoliteDoj);
+
+          // Format dates to readable format
+          const formatDate = (date) => (date ? date.toLocaleDateString("en-US") : null);
+
+          // Calculate ageing
+          const ageing = onboardingDate
+            ? Math.floor((onboardingDate - benchStartDate) / (1000 * 60 * 60 * 24))
+            : Math.floor((currentDate - benchStartDate) / (1000 * 60 * 60 * 24));
+
+          // Calculate total experience
+          const experienceInAccolite = Math.floor((currentDate - accoliteDoj) / (1000 * 60 * 60 * 24 * 365.25));
+          const totalExperience = candidate.pastExperience + experienceInAccolite;
+
+          return {
+            id: candidate.id,
+            empId: candidate.empId,
+            name: candidate.name,
+            skill: candidate.skill,
+            status: candidate.status,
+            onBench: candidate.onBench,
+            ageing: ageing + " days", // Days difference
+            benchStartingDate: formatDate(benchStartDate), // Formatted date
+            tentativeOnboardingDate: formatDate(new Date(candidate.tentativeOnboardingDate)), // Formatted date
+            totalExperience: totalExperience + " years", // Total years of experience
+            // pastExperience: candidate.pastExperience,
+            // TODO: interviewId: candidate.interviews?.map((interview) => interview.interviewId) || [],
+            baseLocation: candidate.baseLocation,
+            // client: candidate.clientId,
+            projectType: candidate.projectType,
+            projectAllocationStatus: candidate.projectAllocationStatus,
+            selectionDate: formatDate(new Date(candidate.selectionDate)), // Formatted date
+            remarks: candidate.remarks,
+            thLink: candidate.thLink,
+            currentLocation: candidate.currentLocation,
+            mentorship: candidate.mentorship,
+            accoliteDoj: formatDate(accoliteDoj), // Formatted date
+            lwdInAccolite: formatDate(new Date(candidate.lwdInAccolite)), // Formatted date
+            onboardingDate: formatDate(onboardingDate), // Formatted date
+          };
+        });
+
         setCandidates(transformedData);
 
         const initialFilters = {};
@@ -65,7 +96,7 @@ const CandidateSearch = () => {
       value={filters[field]?.value || ''}
       onChange={(e) => onFilterChange(field, e.target.value)}
       placeholder={`Search by ${field}`}
-      style={{ minWidth: '150px' }} // Ensure the input field has a minimum width
+      style={{ boxSizing: 'border-box', minWidth: '150px' }} // Ensure the input field has a minimum width
     />
   );
 
@@ -136,16 +167,17 @@ const CandidateSearch = () => {
             value={candidates}
             paginator
             rows={10}
-            responsiveLayout="scroll"
             filters={filters}
             filterDisplay="row"
+            stripedRows
+            showGridlines
             className="table table-striped table-hover text-center"
           >
             {editMode && (
               <Column
                 header="Actions"
                 body={renderEditButton}
-                style={{ textAlign: 'center', width: '150px', paddingRight: '20px' }} // Adjusted width and added padding
+                style={{ textAlign: 'center', width: '150px', padding: '10px' }} // Adjusted width and added padding
               />
             )}
             {candidates.length > 0 &&
@@ -160,8 +192,8 @@ const CandidateSearch = () => {
                     filterMatchMode="custom"
                     filterFunction={customFilter}
                     filterElement={renderFilterInput(key)}
-                    bodyStyle={{ textAlign: 'center', verticalAlign: 'middle', padding: '10px' }} // Added padding here
-                    headerStyle={{ textAlign: 'center', padding: '10px' }} // Added padding here
+                    bodyStyle={{ textAlign: 'center', verticalAlign: 'middle', padding: '10px', border: '1px solid', borderColor: '#D0DDD0' }} // Added padding here
+                    headerStyle={{ textAlign: 'center', padding: '10px', border: '1px solid', borderColor: '#D0DDD0' }} // Added padding here
                   />
                 );
               })}
