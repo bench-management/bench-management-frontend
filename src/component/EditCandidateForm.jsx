@@ -15,7 +15,6 @@ function EditCandidateForm() {
       try {
         const response = await fetch(
           `http://localhost:8080/api/candidates/${candidateId}`
-            `http://localhost:8080/api/candidates/${candidateId}`
         );
         const data = await response.json();
         setFormData(data); // Load candidate data
