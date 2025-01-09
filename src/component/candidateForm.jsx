@@ -294,7 +294,7 @@ function CandidateForm() {
 
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/candidates',
+        `${import.meta.env.VITE_API_URL}/api/candidates`,
         formattedData,
         {
           headers: {

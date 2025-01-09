@@ -1,5 +1,5 @@
 export const fetchAllCandidates = async () => {
-    return fetch("http://localhost:8080/api/candidates")
+    return fetch(`${import.meta.env.VITE_API_URL}/api/candidates`)
         .then((response) => response.json())
         .then((data) => {
             const transformedData = data.map((candidate) => ({
@@ -31,7 +31,7 @@ export const fetchAllCandidates = async () => {
 }
 
 export const fetchInterviewsByCandidateId = async (candidateId) => {
-    return fetch(`http://localhost:8080/api/interviews/candidate/${candidateId}`)
+    return fetch(`${import.meta.env.VITE_API_URL}/api/interviews/candidate/${candidateId}`)
         .then((response) => response.json())
         .then((data) => {
             const transformedData = data.map((item) => ({

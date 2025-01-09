@@ -15,7 +15,7 @@ const Verification = ({ setIsAuthenticated }) => { // Accept setIsAuthenticated 
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:8080/api/request-login", { email });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/request-login`, { email });
       setMessage(response.data);
       setStep(2); // Move to OTP step
     } catch (error) {
@@ -24,31 +24,12 @@ const Verification = ({ setIsAuthenticated }) => { // Accept setIsAuthenticated 
     setLoading(false);
   };
 
-//   const handleOTPSubmit = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     try {
-//       const response = await axios.post("http://localhost:8080/api/verify-login", {
-//         email,
-//         verificationCode,
-//       });
-//       setMessage(response.data);
-//     //setMessage("Submit hua");
-//       if (response.data.includes("Login successful")) {
-//         setIsAuthenticated(true); // Update authentication state
-//         localStorage.setItem("isAuthenticated", true);//Persist Login State
-//         navigate("/"); // Redirect to home page
-//       }
-//     } catch (error) {
-//       setMessage("Error verifying code.");
-//     }
-//     setLoading(false);
-//   };
+
 const handleOTPSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:8080/api/verify-login", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/verify-login`, {
         email,
         verificationCode,
       });

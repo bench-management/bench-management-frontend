@@ -18,7 +18,7 @@ const InterviewsDisplayTable = () => {
   const navigate = useNavigate(); // Navigation function
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/interviews')
+    fetch(`${import.meta.env.VITE_API_URL}/api/interviews`)
       .then((response) => response.json())
       .then((data) => {
 
