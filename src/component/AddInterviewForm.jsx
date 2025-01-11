@@ -76,7 +76,7 @@ function AddInterviewForm() {
   const fetchCandidates = async (searchTerm) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/candidates/search?searchTerm=${searchTerm}`
+        `${import.meta.env.VITE_API_URL}/api/candidates/search?searchTerm=${searchTerm}`
       );
       setCandidates(response.data);
     } catch (error) {
@@ -87,7 +87,7 @@ function AddInterviewForm() {
   const fetchClients = async (searchTerm) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/clients/search?searchTerm=${searchTerm}`
+        `${import.meta.env.VITE_API_URL}/api/clients/search?searchTerm=${searchTerm}`
       );
       setClients(response.data);
     } catch (error) {
@@ -137,7 +137,7 @@ function AddInterviewForm() {
 
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/interviews',
+        `${import.meta.env.VITE_API_URL}/api/interviews`,
         formData,
         {
           headers: { 'Content-Type': 'application/json' },

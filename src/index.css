@@ -5,5 +5,8 @@
 }
 
 html {
-  background-color: #f1e9d1;
+  background: linear-gradient(45deg, #030d6a, #74115a);
+  background-size: cover; /* Ensures the gradient covers the whole screen */
+  background-attachment: fixed; /* Ensures the background is fixed */
+
 }

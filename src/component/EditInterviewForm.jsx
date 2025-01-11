@@ -28,7 +28,7 @@ function EditInterviewForm() {
     useEffect(() => {
         const fetchInterview = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/interviews/${id}`);
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/interviews/${id}`);
                 const interview = response.data;
 
                 setFormData({
@@ -66,7 +66,7 @@ function EditInterviewForm() {
 
     const setCandidateField = async (candidateId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/candidates/${candidateId}`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/candidates/${candidateId}`);
             const candidate = response.data;
 
             setSearchTerm(`${candidate.empId} - ${candidate.name}`);
@@ -77,7 +77,7 @@ function EditInterviewForm() {
 
     const setClientField = async (clientId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/clients/${clientId}`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/clients/${clientId}`);
             const client = response.data;
 
             setClientSearchTerm(`${client.clientId} - ${client.clientName}`);
@@ -115,7 +115,7 @@ function EditInterviewForm() {
     const fetchCandidates = async (searchTerm) => {
         try {
             const response = await axios.get(
-                `http://localhost:8080/api/candidates/search?searchTerm=${searchTerm}`
+                `${import.meta.env.VITE_API_URL}/api/candidates/search?searchTerm=${searchTerm}`
             );
             setCandidates(response.data);
         } catch (error) {
@@ -126,7 +126,7 @@ function EditInterviewForm() {
     const fetchClients = async (searchTerm) => {
         try {
             const response = await axios.get(
-                `http://localhost:8080/api/clients/search?searchTerm=${searchTerm}`
+                `${import.meta.env.VITE_API_URL}/api/clients/search?searchTerm=${searchTerm}`
             );
             setClients(response.data);
         } catch (error) {
@@ -182,7 +182,7 @@ function EditInterviewForm() {
         }
 
         try {
-            await axios.put(`http://localhost:8080/api/interviews/${id}`, formData, {
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/interviews/${id}`, formData, {
                 headers: { 'Content-Type': 'application/json' },
             });
             setSuccess(true);

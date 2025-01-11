@@ -1,7 +1,7 @@
 
-import { useState } from 'react';
-import { Form, Card, Button } from 'react-bootstrap';
-import axios from 'axios';
+import { useState } from "react";
+import { Form, Card, Button, Row, Col } from "react-bootstrap";
+import axios from "axios";
 
 function CandidateForm() {
   const [formData, setFormData] = useState({});
@@ -10,7 +10,6 @@ function CandidateForm() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -18,7 +17,7 @@ function CandidateForm() {
 
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: '',
+      [name]: "",
     }));
   };
 
@@ -30,7 +29,7 @@ function CandidateForm() {
     if (!formData.baseLocation) newErrors.baseLocation = 'Base Location is required.';
     if (!formData.status) newErrors.status = 'Status is required.';
     if (formData.pastExperience && formData.pastExperience < 0) {
-      newErrors.pastExperience = 'Past Experience cannot be negative.';
+      newErrors.pastExperience = "Past Experience cannot be negative.";
     }
     if (!formData.accoliteDoj) newErrors.accoliteDoj = 'Accolite DOJ is required.';
     if (!formData.benchStartDate) newErrors.benchStartDate = 'Bench Start Date is required.';
@@ -44,14 +43,14 @@ function CandidateForm() {
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      window.alert('Please fix the errors in the form before submitting.');
+      window.alert("Please fix the errors in the form before submitting.");
       return;
     }
 
     const formattedData = {
       ...formData,
-      onBench: formData.onBench === 'yes',
-      mentorship: formData.mentorship === 'yes',
+      onBench: formData.onBench === "yes",
+      mentorship: formData.mentorship === "yes",
       pastExperience: parseInt(formData.pastExperience, 10) || 0,
       accoliteDoj: formData.accoliteDoj,
       benchStartDate: formData.benchStartDate,
@@ -59,20 +58,20 @@ function CandidateForm() {
 
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/candidates',
+        `${import.meta.env.VITE_API_URL}/api/candidates`,
         formattedData,
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
       setSuccess(true);
-      console.log('Candidate submitted successfully:', response.data);
+      console.log("Candidate submitted successfully:", response.data);
       setFormData({});
     } catch (err) {
-      console.error('Error submitting candidate data:', err);
-      window.alert('Failed to submit candidate data. Please try again.');
+      console.error("Error submitting candidate data:", err);
+      window.alert("Failed to submit candidate data. Please try again.");
     }
   };
 
@@ -99,11 +98,8 @@ function CandidateForm() {
   ];
 
   return (
-    <div
-      className="d-flex justify-content-center align-items-center"
-      style={{ minHeight: '100vh' }}
-    >
-      <Card style={{ width: '80%', maxWidth: '800px' }} className="p-4">
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+      <Card style={{ width: "80%", maxWidth: "800px" }} className="p-4">
         <Card.Body>
           <h3 className="text-center mb-4">Candidate Details Form</h3>
 
@@ -115,37 +111,78 @@ function CandidateForm() {
 
           <Form onSubmit={handleSubmit}>
             {formFields.map((field, index) => (
-              <Form.Group className="mb-3" controlId={`formGroup${field.name}`} key={index}>
-                <Form.Label>{field.label}:</Form.Label>
-                {field.type === 'select' ? (
-                  <Form.Control
-                    as="select"
-                    name={field.name}
-                    value={formData[field.name] || ''}
-                    onChange={handleChange}
-                    isInvalid={!!errors[field.name]}
-                  >
-                    <option value="">Select</option>
-                    {field.options.map((option, i) => (
-                      <option value={option} key={i}>
-                        {option}
-                      </option>
-                    ))}
-                  </Form.Control>
-                ) : (
-                  <Form.Control
-                    type={field.type}
-                    name={field.name}
-                    value={formData[field.name] || ''}
-                    placeholder={field.placeholder || ''}
-                    onChange={handleChange}
-                    isInvalid={!!errors[field.name]}
-                  />
-                )}
-                <Form.Control.Feedback type="invalid">
-                  {errors[field.name]}
-                </Form.Control.Feedback>
-              </Form.Group>
+              index % 2 === 0 && (
+                <Row key={index} className="mb-3">
+                  <Col md={6}>
+                    <Form.Group controlId={`formGroup${formFields[index].name}`}>
+                      <Form.Label>
+                        {formFields[index].label}{formFields[index].isRequired && <span style={{ color: "red" }}>*</span>}
+                      </Form.Label>
+                      {formFields[index].type === "select" ? (
+                        <Form.Control
+                          as="select"
+                          name={formFields[index].name}
+                          value={formData[formFields[index].name] || ""}
+                          onChange={handleChange}
+                          isInvalid={!!errors[formFields[index].name]}
+                        >
+                          <option value="">Select</option>
+                          {formFields[index].options.map((option, i) => (
+                            <option value={option} key={i}>{option}</option>
+                          ))}
+                        </Form.Control>
+                      ) : (
+                        <Form.Control
+                          type={formFields[index].type}
+                          name={formFields[index].name}
+                          value={formData[formFields[index].name] || ""}
+                          placeholder={formFields[index].placeholder || ""}
+                          onChange={handleChange}
+                          isInvalid={!!errors[formFields[index].name]}
+                        />
+                      )}
+                      <Form.Control.Feedback type="invalid">
+                        {errors[formFields[index].name]}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                  {formFields[index + 1] && (
+                    <Col md={6}>
+                      <Form.Group controlId={`formGroup${formFields[index + 1].name}`}>
+                        <Form.Label>
+                          {formFields[index + 1].label}{formFields[index + 1].isRequired && <span style={{ color: "red" }}>*</span>}
+                        </Form.Label>
+                        {formFields[index + 1].type === "select" ? (
+                          <Form.Control
+                            as="select"
+                            name={formFields[index + 1].name}
+                            value={formData[formFields[index + 1].name] || ""}
+                            onChange={handleChange}
+                            isInvalid={!!errors[formFields[index + 1].name]}
+                          >
+                            <option value="">Select</option>
+                            {formFields[index + 1].options.map((option, i) => (
+                              <option value={option} key={i}>{option}</option>
+                            ))}
+                          </Form.Control>
+                        ) : (
+                          <Form.Control
+                            type={formFields[index + 1].type}
+                            name={formFields[index + 1].name}
+                            value={formData[formFields[index + 1].name] || ""}
+                            placeholder={formFields[index + 1].placeholder || ""}
+                            onChange={handleChange}
+                            isInvalid={!!errors[formFields[index + 1].name]}
+                          />
+                        )}
+                        <Form.Control.Feedback type="invalid">
+                          {errors[formFields[index + 1].name]}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                  )}
+                </Row>
+              )
             ))}
 
             <Button variant="primary" type="submit" className="w-100 mt-3">
