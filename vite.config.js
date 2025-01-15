@@ -5,6 +5,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
 
-  base: "/bench-management-frontend",
-  
+  // base: "/bench-management-frontend",
+
 });

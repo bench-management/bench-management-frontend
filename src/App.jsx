@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import CandidateForm from "./component/candidateForm";
-import CandidateSearch from "./component/CandidateSearch";
 import EditCandidateForm from "./component/EditCandidateForm";
 import Home from "./component/Home";
 import InterviewsDisplayTable from "./component/InterviewsDisplayTable";
@@ -12,6 +11,7 @@ import CandidateTable from "./component/CandidateTable";
 
 function App() {
   return (
+    // <Router basename="/bench-management-frontend">
     <Router>
       <Routes>
         {/* Public Route */}
