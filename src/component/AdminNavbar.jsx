@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import '../styles/AdminNavbar.scss';
-import  image from '../img/tig85642.png'
+import image from '../img/tig85642.png'
 import "../css/custom-navbar.css"
+
 const AdminNavbar = () => {
   return (
     <Navbar expand="lg" className="custom-navbar" data-bs-theme="dark">
       <Container>
-        <img src={image} alt="bounteous logo" style={{height:40,paddingRight:25}} ></img>
+        <img src={image} alt="bounteous logo" style={{ height: 40, paddingRight: 25 }} ></img>
         <Navbar.Brand as={Link} to="/">Bench Management</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

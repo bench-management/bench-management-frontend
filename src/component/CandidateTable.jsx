@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Table, Input, Spin, Alert } from "antd";
+import { Table, Input, Alert } from "antd";
 import PropTypes from "prop-types";
 import { fetchAllCandidates, fetchInterviewsByCandidateId } from "../lib/api";
-import "../css/CandidateTable.css"
+import { Link } from "react-router-dom";
 
 const { Search } = Input;
 
@@ -186,6 +186,21 @@ const CandidateTable = () => {
                     onClick: () => handleRowClick(record), // Click anywhere on the row to expand/collapse
                 })}
             />
+            <Link
+                to="/add-candidate"
+                className="btn btn-success rounded-circle position-fixed shadow"
+                style={{
+                    bottom: '20px',
+                    right: '20px',
+                    width: '60px',
+                    height: '60px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <i className="pi pi-plus" style={{ fontSize: '24px' }}></i>
+            </Link>
         </div>
     );
 };
