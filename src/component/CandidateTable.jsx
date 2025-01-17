@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import { Table, Input, Alert } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { Table, Input, Alert, Button, Space } from "antd";
+import { CloseOutlined, FilterOutlined, SearchOutlined } from '@ant-design/icons';
+import Highlighter from 'react-highlight-words';
 import PropTypes from "prop-types";
 import { fetchAllCandidates, fetchInterviewsByCandidateId } from "../lib/api";
 import { Link } from "react-router-dom";
@@ -85,6 +87,33 @@ const CandidateTable = () => {
     const [mainTableSearch, setMainTableSearch] = useState("");
     const [subTableSearch, setSubTableSearch] = useState("");
 
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef(null);
+
+    const [tableKey, setTableKey] = useState(0);
+
+    const filtersRef = useRef({});
+
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
+    };
+
+    const handleReset = (clearFilters) => {
+        clearFilters();
+        setSearchText('');
+    };
+
+    const clearAllFilters = () => {
+        setMainTableSearch("");
+        setSearchText('')
+        setSearchedColumn('')
+        filtersRef.current = {};
+        setTableKey((prevKey) => prevKey + 1);
+    };
+
     const fetchCandidates = async () => {
         try {
             const candidates = await fetchAllCandidates();
@@ -107,17 +136,132 @@ const CandidateTable = () => {
         );
     };
 
+    const getColumnSearchProps = (dataIndex) => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
+
+            filtersRef.current[dataIndex] = { clearFilters, confirm };
+
+            return <div
+                style={{
+                    padding: 8,
+                    // border: "1px solid"
+                }}
+                onKeyDown={(e) => e.stopPropagation()}
+            >
+                <Input
+                    ref={searchInput}
+                    placeholder={`Search ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                    style={{
+                        marginBottom: 8,
+                        display: 'block',
+                    }}
+                />
+                <Space
+                    style={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        // border: "1px solid"
+                    }}
+                >
+                    {/* <Button
+                        type="link"
+                        size="small"
+                        icon={<CloseOutlined />}
+                        onClick={() => {
+                            close();
+                        }}
+                    >
+                    </Button> */}
+                    <Button
+                        onClick={() => {
+                            if (clearFilters) {
+                                handleReset(clearFilters)
+                            }
+                        }}
+                        size="small"
+                        style={{
+                            // display: "flex",
+                            // width: "100%",
+                            // flexGrow: 1,
+                        }}
+                    >
+                        Reset
+                    </Button>
+
+                    <Button
+                        type="primary"
+                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                        icon={<SearchOutlined />}
+                        size="small"
+                        style={{
+                            // display: "flex",
+                            // width: "100%",
+                            // flexGrow: 1,
+                        }}
+                    >
+                        Filter
+                    </Button>
+                </Space >
+            </div >
+        },
+        filterIcon: (filtered) => (
+            <FilterOutlined
+                style={{
+                    color: filtered ? '#1677ff' : undefined,
+                }}
+            />
+        ),
+        onFilter: (value, record) =>
+            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        filterDropdownProps: {
+            onOpenChange(open) {
+                if (open) {
+                    setTimeout(() => searchInput.current?.select(), 100);
+                }
+            },
+        },
+        render: (text) =>
+            searchedColumn === dataIndex ? (
+                <Highlighter
+                    highlightStyle={{
+                        backgroundColor: '#ffc069',
+                        padding: 0,
+                    }}
+                    searchWords={[searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                />
+            ) : (
+                text
+            ),
+    });
+
     const columns = [
-        { title: "Employee ID", dataIndex: "empId", key: "empId" },
-        { title: "Name", dataIndex: "name", key: "name" },
-        { title: "Skill", dataIndex: "skill", key: "skill" },
-        { title: "Experience", dataIndex: "pastExperience", key: "pastExperience" },
-        { title: "Base Location", dataIndex: "baseLocation", key: "baseLocation" },
-        { title: "Status", dataIndex: "status", key: "status" },
-        { title: "Accolite DOJ", dataIndex: "accoliteDoj", key: "accoliteDoj" },
-        { title: "Bench Start Date", dataIndex: "benchStartDate", key: "benchStartDate" },
-        { title: "Onboarding Date", dataIndex: "onboardingDate", key: "onboardingDate" },
-        { title: "Remarks", dataIndex: "remarks", key: "remarks" },
+        { title: "Employee ID", dataIndex: "empId", key: "empId", fixed: 'left', ...getColumnSearchProps('empId') },
+        { title: "Name", dataIndex: "name", key: "name", fixed: 'left', ...getColumnSearchProps('name') },
+        { title: "Skill", dataIndex: "skill", key: "skill", fixed: 'left', ...getColumnSearchProps('skill') },
+        { title: "Experience", dataIndex: "pastExperience", key: "pastExperience", fixed: 'left', ...getColumnSearchProps('pastExperience') },
+        { title: "Base Location", dataIndex: "baseLocation", key: "baseLocation", ...getColumnSearchProps('baseLocation') },
+        { title: "Status", dataIndex: "status", key: "status", ...getColumnSearchProps('status') },
+        { title: "Accolite DOJ", dataIndex: "accoliteDoj", key: "accoliteDoj", ...getColumnSearchProps('accoliteDoj') },
+        { title: "Bench Start Date", dataIndex: "benchStartDate", key: "benchStartDate", ...getColumnSearchProps('benchStartDate') },
+        { title: "Onboarding Date", dataIndex: "onboardingDate", key: "onboardingDate", ...getColumnSearchProps('onboardingDate') },
+        {
+            title: "Remarks",
+            dataIndex: "remarks",
+            key: "remarks",
+            fixed: 'right',
+            width: 200,
+            render: (text) => (
+                <div style={{ maxHeight: '50px', overflowY: 'auto', whiteSpace: "pre-wrap" }}>
+                    {text}
+                </div>
+            ),
+        },
     ];
 
     if (error) {
@@ -143,19 +287,25 @@ const CandidateTable = () => {
     return (
         <div style={{
             backgroundColor: '#f1e9d1',
-            padding: '2rem'
+            padding: '1rem',
+            // border: "1px solid blue"
         }}>
             {/* Main Table Search */}
-            <div style={{ padding: '1rem', display: "flex", justifyContent: "flex-end" }}>
-                <Search
-                    placeholder="Search candidates..."
-                    onChange={(e) => setMainTableSearch(e.target.value)}
-                    style={{ width: 300 }}
-                    allowClear
-                />
+            <div style={{ margin: "0 0 1rem", display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+                    <Search
+                        placeholder="Search candidates..."
+                        onChange={(e) => setMainTableSearch(e.target.value)}
+                        style={{ width: 300 }}
+                        allowClear
+                    />
+                    <Button onClick={clearAllFilters} style={{ color: "gray" }}>Clear filters</Button>
+                </div>
+
             </div>
 
             <Table
+                key={tableKey}
                 columns={columns}
                 dataSource={filteredCandidates}
                 loading={loading}
@@ -185,6 +335,12 @@ const CandidateTable = () => {
                 onRow={(record) => ({
                     onClick: () => handleRowClick(record), // Click anywhere on the row to expand/collapse
                 })}
+                pagination={{
+                    position: ["bottomCenter"],
+                }}
+                scroll={{
+                    x: 'max-content',
+                }}
             />
             <Link
                 to="/add-candidate"

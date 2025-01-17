@@ -40,12 +40,13 @@ const Verification = () => { // Accept setIsAuthenticated as a prop
       // Step 2: Save the token
       saveToken(token);
 
+      setLoading(false)
+
       // Step 3: Redirect to a protected page
       navigate("/")
     } catch (error) {
       console.error("Login failed", error);
       alert("Invalid login credentials.");
-    } finally {
       setLoading(false)
     }
   };
