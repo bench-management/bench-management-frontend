@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Table, Input, Alert, Button, Space } from "antd";
+import { Modal, Table, Input, Alert, Button, Space } from "antd";
 import { CloseOutlined, FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import PropTypes from "prop-types";
@@ -13,6 +13,11 @@ const SubTable = ({ candidateId, onSearch }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [interviewData, setInterviewData] = useState([]);
+    const [expandedRowKeys, setExpandedRowKeys] = useState([]);
+    const [mainTableSearch, setMainTableSearch] = useState("");
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedCandidate, setSelectedCandidate] = useState(null);
+    const [remarks, setRemarks] = useState([]);
 
     const fetchInterviews = async (candidateId) => {
         try {
@@ -240,6 +245,33 @@ const CandidateTable = () => {
             ),
     });
 
+
+    //-------------------
+    const [remarks, setRemarks] = useState(""); // Adjusted to store a single remark
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
+
+
+    const openRemarksModal = (text) => {
+        setRemarks(text); // Store the remarks to display in the modal
+        showModal(); // Open the modal
+    };
+    
+
+
     const columns = [
         { title: "Employee ID", dataIndex: "empId", key: "empId", fixed: 'left', ...getColumnSearchProps('empId') },
         { title: "Name", dataIndex: "name", key: "name", fixed: 'left', ...getColumnSearchProps('name') },
@@ -257,9 +289,9 @@ const CandidateTable = () => {
             fixed: 'right',
             width: 200,
             render: (text) => (
-                <div style={{ maxHeight: '50px', overflowY: 'auto', whiteSpace: "pre-wrap" }}>
-                    {text}
-                </div>
+                <a onClick={() => openRemarksModal(text)} style={{ color: "#1677ff", cursor: "pointer" }}>
+                    Manage
+                </a>
             ),
         },
     ];
@@ -357,6 +389,14 @@ const CandidateTable = () => {
             >
                 <i className="pi pi-plus" style={{ fontSize: '24px' }}></i>
             </Link>
+            <Modal
+                title="Remarks"
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+            >
+                <p>{remarks}</p> {/* Display the remarks */}
+            </Modal>
         </div>
     );
 };
