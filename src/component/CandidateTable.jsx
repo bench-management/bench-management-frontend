@@ -5,6 +5,8 @@ import Highlighter from 'react-highlight-words';
 import PropTypes from "prop-types";
 import { fetchAllCandidates, fetchInterviewsByCandidateId } from "../lib/api";
 import { Link } from "react-router-dom";
+import axios from 'axios';
+import apiClient from "../lib/apiClient";
 
 const { Search } = Input;
 
@@ -16,8 +18,8 @@ const SubTable = ({ candidateId, onSearch }) => {
     const [expandedRowKeys, setExpandedRowKeys] = useState([]);
     const [mainTableSearch, setMainTableSearch] = useState("");
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedCandidate, setSelectedCandidate] = useState(null);
-    const [remarks, setRemarks] = useState([]);
+    
+    
 
     const fetchInterviews = async (candidateId) => {
         try {
@@ -96,6 +98,8 @@ const CandidateTable = () => {
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
 
+    const [selectedCandidate, setSelectedCandidate] = useState(null);
+
     const [tableKey, setTableKey] = useState(0);
 
     const filtersRef = useRef({});
@@ -140,6 +144,15 @@ const CandidateTable = () => {
             prevExpandedKeys.includes(record.id) ? [] : [record.id]
         );
     };
+
+    //wrong
+
+    // const handleRowClick = (record) => {
+    //     setExpandedRowKeys((prevExpandedKeys) =>
+    //       prevExpandedKeys.includes(record.id) ? [] : [record.id]
+    //     );
+    //     setSelectedCandidate(record); // Set the selected candidate here
+    //   };
 
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
@@ -247,17 +260,36 @@ const CandidateTable = () => {
 
 
     //-------------------
-    const [remarks, setRemarks] = useState(""); // Adjusted to store a single remark
-
+    const [remarks, setRemarks] = useState([]); // Adjusted to store a single remark
+    const [newRemark, setNewRemark] = useState(""); // To store the new remark being added
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const showModal = () => {
         setIsModalOpen(true);
     };
 
-    const handleOk = () => {
-        setIsModalOpen(false);
+    // const handleOk = () => {
+    //     // Add logic to save `remarks` back to the parent data source
+    //     setIsModalOpen(false);
+    // };
+    
+    
+    const handleOk = async () => {
+        try {
+            if (selectedCandidate) { // Use selectedCandidate instead of candidateId
+                const response = await apiClient.patch(`/candidates/${selectedCandidate}/remarks`, { remarks });
+                if (response.status === 200) {
+                    alert('Remarks updated successfully');
+                    setIsModalOpen(false); // Close modal after successful update
+                }
+            }
+        } catch (error) {
+            console.error('Error updating remarks:', error);
+            alert('Failed to update remarks');
+        }
     };
+    
+    
 
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -265,11 +297,11 @@ const CandidateTable = () => {
 
 
 
-    const openRemarksModal = (text) => {
-        setRemarks(text); // Store the remarks to display in the modal
-        showModal(); // Open the modal
+    const openRemarksModal = (remarksList,candidateId) => {
+        setRemarks(remarksList || []); // Populate the remarks array
+        setSelectedCandidate(candidateId);
+        showModal();
     };
-    
 
 
     const columns = [
@@ -283,18 +315,23 @@ const CandidateTable = () => {
         { title: "Bench Start Date", dataIndex: "benchStartDate", key: "benchStartDate", ...getColumnSearchProps('benchStartDate') },
         { title: "Onboarding Date", dataIndex: "onboardingDate", key: "onboardingDate", ...getColumnSearchProps('onboardingDate') },
         {
-            title: "Remarks",
-            dataIndex: "remarks",
-            key: "remarks",
-            fixed: 'right',
-            width: 200,
-            render: (text) => (
-                <a onClick={() => openRemarksModal(text)} style={{ color: "#1677ff", cursor: "pointer" }}>
-                    Manage
-                </a>
-            ),
-        },
+    title: "Remarks",
+    dataIndex: "remarks",
+    key: "remarks",
+    fixed: "right",
+    width: 200,
+    render: (remarksList, record) => (
+        <a onClick={() => openRemarksModal(remarksList,record.id)} style={{ color: "#1677ff", cursor: "pointer" }}>
+            Manage
+        </a>
+    ),
+
+},
+
     ];
+
+    
+    
 
     if (error) {
         return (
@@ -315,6 +352,26 @@ const CandidateTable = () => {
                 : false
         )
     );
+
+    const handleEditRemark = (index, updatedValue) => {
+        setRemarks((prevRemarks) => {
+            const updatedRemarks = [...prevRemarks];
+            updatedRemarks[index] = updatedValue;
+            return updatedRemarks;
+        });
+    };
+    
+    const handleDeleteRemark = (index) => {
+        setRemarks((prevRemarks) => prevRemarks.filter((_, i) => i !== index));
+    };
+    
+    const handleAddRemark = () => {
+        if (newRemark.trim() !== "") {
+            setRemarks((prevRemarks) => [...prevRemarks, newRemark]);
+            setNewRemark(""); // Clear the input field after adding
+        }
+    };
+    
 
     return (
         <div style={{
@@ -389,14 +446,54 @@ const CandidateTable = () => {
             >
                 <i className="pi pi-plus" style={{ fontSize: '24px' }}></i>
             </Link>
+            {/* <Modal
+                title="Remarks"
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+            >
+                <p>{remarks}</p> 
+            </Modal> */}
+
+
+
             <Modal
                 title="Remarks"
                 open={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}
             >
-                <p>{remarks}</p> {/* Display the remarks */}
+                <div>
+                    {remarks.map((remark, index) => (
+                        <div key={index} style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                            <Input
+                                value={remark}
+                                onChange={(e) => handleEditRemark(index, e.target.value)}
+                                style={{ flex: 1, marginRight: "10px" }}
+                            />
+                            <Button
+                                type="danger"
+                                onClick={() => handleDeleteRemark(index)}
+                                style={{ marginLeft: "5px" }}
+                            >
+                                Delete
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+                <div style={{ marginTop: "20px" }}>
+                    <Input
+                        placeholder="Add a new remark..."
+                        value={newRemark}
+                        onChange={(e) => setNewRemark(e.target.value)}
+                        style={{ marginRight: "10px", width: "80%" }}
+                    />
+                    <Button type="primary" onClick={handleAddRemark}>
+                        Add Remark
+                    </Button>
+                </div>
             </Modal>
+
         </div>
     );
 };
