@@ -267,10 +267,20 @@ const CandidateTable = () => {
     const showModal = () => {
         setIsModalOpen(true);
     };
-
-    // const handleOk = () => {
-    //     // Add logic to save `remarks` back to the parent data source
-    //     setIsModalOpen(false);
+    
+    // const handleOk = async () => {
+    //     try {
+    //         if (selectedCandidate) { // Use selectedCandidate instead of candidateId
+    //             const response = await apiClient.patch(`/candidates/${selectedCandidate}/remarks`, { remarks });
+    //             if (response.status === 200) {
+    //                 alert('Remarks updated successfully');
+    //                 setIsModalOpen(false); // Close modal after successful update
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error('Error updating remarks:', error);
+    //         alert('Failed to update remarks');
+    //     }
     // };
     
     
@@ -281,6 +291,7 @@ const CandidateTable = () => {
                 if (response.status === 200) {
                     alert('Remarks updated successfully');
                     setIsModalOpen(false); // Close modal after successful update
+                    setRemarks(response.data.remarks); // Update the state with new remarks
                 }
             }
         } catch (error) {
@@ -288,8 +299,6 @@ const CandidateTable = () => {
             alert('Failed to update remarks');
         }
     };
-    
-    
 
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -400,6 +409,12 @@ const CandidateTable = () => {
         }
       };
 
+      // Sync remarks state whenever it changes
+    useEffect(() => {
+        if (isModalOpen) {
+            // Optionally fetch latest remarks if needed (if API is supported to fetch current remarks)
+        }
+    }, [isModalOpen]);
     return (
         <div style={{
             backgroundColor: '#f1e9d1',
