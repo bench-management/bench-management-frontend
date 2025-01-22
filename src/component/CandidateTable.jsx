@@ -8,6 +8,9 @@ import { Link } from "react-router-dom";
 import axios from 'axios';
 import apiClient from "../lib/apiClient";
 
+import dayjs from 'dayjs';
+
+
 const { Search } = Input;
 
 // Sub-Table Component
@@ -267,21 +270,9 @@ const CandidateTable = () => {
     const showModal = () => {
         setIsModalOpen(true);
     };
+
     
-    // const handleOk = async () => {
-    //     try {
-    //         if (selectedCandidate) { // Use selectedCandidate instead of candidateId
-    //             const response = await apiClient.patch(`/candidates/${selectedCandidate}/remarks`, { remarks });
-    //             if (response.status === 200) {
-    //                 alert('Remarks updated successfully');
-    //                 setIsModalOpen(false); // Close modal after successful update
-    //             }
-    //         }
-    //     } catch (error) {
-    //         console.error('Error updating remarks:', error);
-    //         alert('Failed to update remarks');
-    //     }
-    // };
+
     
     
     const handleOk = async () => {
@@ -291,6 +282,7 @@ const CandidateTable = () => {
                 if (response.status === 200) {
                     alert('Remarks updated successfully');
                     setIsModalOpen(false); // Close modal after successful update
+
                     setRemarks(response.data.remarks); // Update the state with new remarks
                 }
             }
@@ -299,6 +291,7 @@ const CandidateTable = () => {
             alert('Failed to update remarks');
         }
     };
+
 
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -312,6 +305,12 @@ const CandidateTable = () => {
         showModal();
     };
 
+    const calculateAging = (benchStartDate) => {
+        if (!benchStartDate) return "N/A";
+        const parsedDate = dayjs(benchStartDate, ["D/M/YYYY", "DD/MM/YYYY"], true);
+        if (!parsedDate.isValid()) return "Invalid Date";
+        return `${dayjs().diff(parsedDate, 'day')} days`;
+    };
 
     const columns = [
         { title: "Employee ID", dataIndex: "empId", key: "empId", fixed: 'left', ...getColumnSearchProps('empId') },
@@ -323,6 +322,11 @@ const CandidateTable = () => {
         { title: "Accolite DOJ", dataIndex: "accoliteDoj", key: "accoliteDoj", ...getColumnSearchProps('accoliteDoj') },
         { title: "Bench Start Date", dataIndex: "benchStartDate", key: "benchStartDate", ...getColumnSearchProps('benchStartDate') },
         { title: "Onboarding Date", dataIndex: "onboardingDate", key: "onboardingDate", ...getColumnSearchProps('onboardingDate') },
+      
+        { title: "Aging", dataIndex: "benchStartDate", key: "aging", render: (_, record) => calculateAging(record.benchStartDate) },
+
+
+
         {
     title: "Remarks",
     dataIndex: "remarks",
@@ -408,6 +412,7 @@ const CandidateTable = () => {
             console.error("Error during file download:", error);
         }
       };
+
 
       // Sync remarks state whenever it changes
     useEffect(() => {
@@ -561,5 +566,4 @@ const CandidateTable = () => {
         </div>
     );
 };
-
 export default CandidateTable;
