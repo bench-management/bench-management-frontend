@@ -15,7 +15,6 @@ function CandidateForm() {
       [name]: value,
     }));
 
-
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: '',

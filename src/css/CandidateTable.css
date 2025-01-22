@@ -1,0 +1,70 @@
+/* Left-align string values */
+.main-table .ant-table-tbody>tr>td {
+    text-align: left;
+}
+
+/* Right-align numeric values */
+.main-table .ant-table-tbody>tr>td:nth-child(5),
+.main-table .ant-table-tbody>tr>td:nth-child(8),
+/* Adjust column index for numeric columns */
+.main-table .ant-table-tbody>tr>td:nth-child(9),
+/* Example: Experience, Bench Start Date */
+.main-table .ant-table-tbody>tr>td:nth-child(10) {
+    text-align: right;
+}
+
+.subtable .ant-table-tbody>tr>td {
+    text-align: left;
+}
+
+/* Right-align numeric values */
+.subtable .ant-table-tbody>tr>td:nth-child(5),
+.subtable .ant-table-tbody>tr>td:nth-child(8),
+/* Adjust column index for numeric columns */
+.subtable .ant-table-tbody>tr>td:nth-child(9),
+/* Example: Experience, Bench Start Date */
+.subtable .ant-table-tbody>tr>td:nth-child(10) {
+    text-align: left;
+}
+
+/* Decrease font size for the entire table */
+.ant-table {
+    font-size: 12px;
+    border: 2px solid #f3d681 !important;
+    border-radius: 0 !important;
+    /* Adjust the size as needed */
+}
+
+/* Decrease font size for table headers */
+.ant-table-thead>tr>th {
+    font-size: 12px;
+    text-align: center !important;
+    background-color: #78B3CE !important;
+    border-radius: 0 !important;
+}
+
+/* Decrease font size for table rows */
+.ant-table-tbody>tr>td {
+    font-size: 12px;
+    /* Adjust row font size */
+    /* border-color: gray !important; */
+}
+
+.ant-table-tbody>tr:hover>td {
+    /* background-color: lightsalmon !important; */
+}
+
+.ant-table->td {
+    background-color: red !important;
+    /* Selected row color */
+}
+
+/* Decrease font size for the subtable */
+/* .subtable-header .ant-table {
+    font-size: 11px;
+} */
+
+.ant-table-expanded-row>td {
+    padding: 0 !important;
+    /* Remove padding */
+}
