@@ -8,6 +8,7 @@ import AddInterviewForm from "./component/AddInterviewForm";
 import Verification from "./component/Verification";
 import AuthenticatedRoute from "./component/AuthenticatedRoute";
 import CandidateTable from "./component/CandidateTable";
+import Charts from "./component/Chart";
 
 function App() {
   return (
@@ -41,6 +42,10 @@ function App() {
         <Route
           path="/add-interview"
           element={<AuthenticatedRoute element={<AddInterviewForm />} />}
+        />
+        <Route
+          path="/charts"
+          element={<AuthenticatedRoute element={<Charts />} />}
         />
       </Routes>
     </Router>

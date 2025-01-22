@@ -372,6 +372,33 @@ const CandidateTable = () => {
         }
     };
     
+    const handleDownload = async (event) => {
+        event.preventDefault();
+    
+        try {
+            const response = await apiClient.get("/candidates/export", {
+                responseType: "blob", // Ensure the response is treated as a binary file
+            });
+    
+            // Create a blob from the response data
+            const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            const url = window.URL.createObjectURL(blob);
+    
+            // Create a temporary anchor element to trigger the download
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "candidates.xlsx");
+    
+            document.body.appendChild(link);
+            link.click();
+    
+            // Clean up
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error("Error during file download:", error);
+        }
+      };
 
     return (
         <div style={{
@@ -431,6 +458,7 @@ const CandidateTable = () => {
                     x: 'max-content',
                 }}
             />
+
             <Link
                 to="/add-candidate"
                 className="btn btn-success rounded-circle position-fixed shadow"
@@ -446,6 +474,26 @@ const CandidateTable = () => {
                 }}
             >
                 <i className="pi pi-plus" style={{ fontSize: '24px' }}></i>
+            </Link>
+            
+                        {/* Floating Download Button */}
+            <Link
+            to="/download"
+            className="btn btn-primary rounded-circle position-fixed shadow"
+            style={{
+                bottom: '100px',  // Adjust to a position slightly lower than the Add button
+                right: '20px',
+                width: '60px',
+                height: '60px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: '5000',
+                position: 'relative',
+            }}
+            onClick={handleDownload}  // Call handleDownload on click
+            >
+            <i className="bi bi-download"></i>  {/* Ensure this matches the correct Bootstrap Icon */}
             </Link>
             {/* <Modal
                 title="Remarks"
