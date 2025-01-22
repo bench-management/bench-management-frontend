@@ -200,23 +200,6 @@ const CandidateSearch = () => {
           </DataTable>
         </div>
       </div>
-
-      {/* Floating Add Button */}
-      <Link
-        to="/add-candidate"
-        className="btn btn-success rounded-circle position-fixed shadow"
-        style={{
-          bottom: '20px',
-          right: '20px',
-          width: '60px',
-          height: '60px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <i className="pi pi-plus" style={{ fontSize: '24px' }}></i>
-      </Link>
     </div>
   );
 };
