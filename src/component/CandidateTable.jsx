@@ -353,6 +353,7 @@ const CandidateTable = () => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    zIndex: '1000',
                 }}
             >
                 <i className="pi pi-plus" style={{ fontSize: '24px' }}></i>

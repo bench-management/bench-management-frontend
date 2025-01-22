@@ -48,7 +48,9 @@ const AdminNavbar = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Candidate</Nav.Link>
-            <Nav.Link as={Link} to="/interview">Interview</Nav.Link>
+
+            {/* <Nav.Link as={Link} to="/interview">Interview</Nav.Link> */}
+
             <Nav.Link as={Link} to="/download" onClick={handleDownload}>Download Candidates</Nav.Link>
           </Nav>
         </Navbar.Collapse>
