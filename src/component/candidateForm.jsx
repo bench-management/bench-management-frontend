@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Form, Card, Button, Row, Col } from "react-bootstrap";
 import axios from "axios";
+import apiClient from "../lib/apiClient";
 
 function CandidateForm() {
   const [formData, setFormData] = useState({});
@@ -23,18 +24,19 @@ function CandidateForm() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.empId) newErrors.empId = 'Employee ID is required.';
-    if (!formData.name) newErrors.name = 'Candidate Name is required.';
-    if (!formData.skill) newErrors.skill = 'Skills are required.';
-    if (!formData.baseLocation) newErrors.baseLocation = 'Base Location is required.';
-    if (!formData.status) newErrors.status = 'Status is required.';
-    if (formData.pastExperience && formData.pastExperience < 0) {
-      newErrors.pastExperience = "Past Experience cannot be negative.";
-    }
-    if (!formData.accoliteDoj) newErrors.accoliteDoj = 'Accolite DOJ is required.';
-    if (!formData.benchStartDate) newErrors.benchStartDate = 'Bench Start Date is required.';
-    if (!formData.onBench) newErrors.onBench = 'On Bench status is required.';
-    return newErrors;
+    // if (!formData.empId) newErrors.empId = 'Employee ID is required.';
+    // if (!formData.name) newErrors.name = 'Candidate Name is required.';
+    // if (!formData.skill) newErrors.skill = 'Skills are required.';
+    // if (!formData.baseLocation) newErrors.baseLocation = 'Base Location is required.';
+    // if (!formData.status) newErrors.status = 'Status is required.';
+    // if (formData.pastExperience && formData.pastExperience < 0) {
+    //   newErrors.pastExperience = "Past Experience cannot be negative.";
+    // }
+    // if (!formData.accoliteDoj) newErrors.accoliteDoj = 'Accolite DOJ is required.';
+    // if (!formData.benchStartDate) newErrors.benchStartDate = 'Bench Start Date is required.';
+    // if (!formData.onBench) newErrors.onBench = 'On Bench status is required.';
+    // return newErrors;
+    return 0;
   };
 
   const handleSubmit = async (event) => {
@@ -55,10 +57,10 @@ function CandidateForm() {
       accoliteDoj: formData.accoliteDoj,
       benchStartDate: formData.benchStartDate,
     };
-
+      console.log(formattedData);
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/candidates`,
+      const response =  await apiClient.post(
+        "/candidates",
         formattedData,
         {
           headers: {
