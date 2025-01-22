@@ -3,3 +3,9 @@
   margin: 0;
   padding: 0;
 }
+
+html {
+  background: linear-gradient(45deg, #030d6a, #74115a);
+  background-size: cover;
+  background-attachment: fixed;
+}

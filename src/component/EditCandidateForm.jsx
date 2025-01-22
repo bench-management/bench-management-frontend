@@ -14,7 +14,7 @@ function EditCandidateForm() {
     const fetchCandidate = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/candidates/id/${candidateId}`
+          `${import.meta.env.VITE_API_URL}/api/candidates/${candidateId}`
         );
         const data = await response.json();
         setFormData(data); // Load candidate data
@@ -68,7 +68,7 @@ function EditCandidateForm() {
     const formattedData = formData;
     try {
       const response = await axios.put(
-        'http://localhost:8080/candidates/update',
+        `${import.meta.env.VITE_API_URL}/api/candidates/${formattedData.id}`,
         formattedData,
         {
           headers: {
@@ -104,6 +104,7 @@ function EditCandidateForm() {
           <h3 className="text-center mb-4">Edit Candidate</h3>
           <Form onSubmit={handleSubmit}>
             {Object.keys(formData).map((key) => {
+              if (key == 'id' || key == 'interviews') return null;
               const value = formData[key];
               if (Array.isArray(value)) {
                 return (

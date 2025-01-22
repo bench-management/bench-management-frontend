@@ -7,7 +7,9 @@ import { fetchAllCandidates, fetchInterviewsByCandidateId } from "../lib/api";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import apiClient from "../lib/apiClient";
+
 import dayjs from 'dayjs';
+
 
 const { Search } = Input;
 
@@ -269,10 +271,8 @@ const CandidateTable = () => {
         setIsModalOpen(true);
     };
 
-    // const handleOk = () => {
-    //     // Add logic to save `remarks` back to the parent data source
-    //     setIsModalOpen(false);
-    // };
+    
+
     
     
     const handleOk = async () => {
@@ -282,6 +282,8 @@ const CandidateTable = () => {
                 if (response.status === 200) {
                     alert('Remarks updated successfully');
                     setIsModalOpen(false); // Close modal after successful update
+
+                    setRemarks(response.data.remarks); // Update the state with new remarks
                 }
             }
         } catch (error) {
@@ -289,8 +291,7 @@ const CandidateTable = () => {
             alert('Failed to update remarks');
         }
     };
-    
-    
+
 
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -303,13 +304,13 @@ const CandidateTable = () => {
         setSelectedCandidate(candidateId);
         showModal();
     };
+
     const calculateAging = (benchStartDate) => {
         if (!benchStartDate) return "N/A";
         const parsedDate = dayjs(benchStartDate, ["D/M/YYYY", "DD/MM/YYYY"], true);
         if (!parsedDate.isValid()) return "Invalid Date";
         return `${dayjs().diff(parsedDate, 'day')} days`;
     };
-
 
     const columns = [
         { title: "Employee ID", dataIndex: "empId", key: "empId", fixed: 'left', ...getColumnSearchProps('empId') },
@@ -321,8 +322,9 @@ const CandidateTable = () => {
         { title: "Accolite DOJ", dataIndex: "accoliteDoj", key: "accoliteDoj", ...getColumnSearchProps('accoliteDoj') },
         { title: "Bench Start Date", dataIndex: "benchStartDate", key: "benchStartDate", ...getColumnSearchProps('benchStartDate') },
         { title: "Onboarding Date", dataIndex: "onboardingDate", key: "onboardingDate", ...getColumnSearchProps('onboardingDate') },
-
+      
         { title: "Aging", dataIndex: "benchStartDate", key: "aging", render: (_, record) => calculateAging(record.benchStartDate) },
+
 
 
         {
@@ -411,6 +413,13 @@ const CandidateTable = () => {
         }
       };
 
+
+      // Sync remarks state whenever it changes
+    useEffect(() => {
+        if (isModalOpen) {
+            // Optionally fetch latest remarks if needed (if API is supported to fetch current remarks)
+        }
+    }, [isModalOpen]);
     return (
         <div style={{
             backgroundColor: '#f1e9d1',
@@ -557,5 +566,4 @@ const CandidateTable = () => {
         </div>
     );
 };
-
 export default CandidateTable;
