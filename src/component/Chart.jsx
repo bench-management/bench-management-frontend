@@ -133,7 +133,7 @@ const Charts = () => {
         const response = await apiClient.get('/candidates/historical-bench-count');
 
         const { data } = response; // Destructuring assignment to get data from response
-        const { data } = response;
+        
 
 
         const xAxisData = Object.keys(data).map((key) => {
@@ -167,15 +167,13 @@ const Charts = () => {
       <Typography variant="h4" sx={{ mb: 2 }}>Monthly Report of Bench Candidates</Typography>
       <BarChart
 
-        xAxis={[{ scaleType: 'band', data: chartData.xAxisData }]}
-        series={[{ data: chartData.seriesData }]}
+        //xAxis={[{ scaleType: 'band', data: chartData.xAxisData }]}
+        //series={[{ data: chartData.seriesData }]}
         width={800}
         height={400}
         xAxis={[{ scaleType: 'band', data: chartData.xAxisData, label: xAxisLabel }]} // Added label here
         yAxis={[{ label: yAxisLabel }]} // Added yAxis and label here
         series={[{ data: chartData.seriesData, label: "Candidates" }]} //Optional: added a label to the series
-        width={800}
-        height={400}
         margin={{
           top: 20,
           bottom: 70, // Increased bottom margin to prevent x-axis labels from being cut off

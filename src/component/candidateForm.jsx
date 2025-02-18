@@ -24,18 +24,18 @@ function CandidateForm() {
 
   const validateForm = () => {
     const newErrors = {};
-    // if (!formData.empId) newErrors.empId = 'Employee ID is required.';
-    // if (!formData.name) newErrors.name = 'Candidate Name is required.';
-    // if (!formData.skill) newErrors.skill = 'Skills are required.';
-    // if (!formData.baseLocation) newErrors.baseLocation = 'Base Location is required.';
-    // if (!formData.status) newErrors.status = 'Status is required.';
-    // if (formData.pastExperience && formData.pastExperience < 0) {
-    //   newErrors.pastExperience = "Past Experience cannot be negative.";
-    // }
-    // if (!formData.accoliteDoj) newErrors.accoliteDoj = 'Accolite DOJ is required.';
-    // if (!formData.benchStartDate) newErrors.benchStartDate = 'Bench Start Date is required.';
-    // if (!formData.onBench) newErrors.onBench = 'On Bench status is required.';
-    // return newErrors;
+    if (!formData.empId) newErrors.empId = 'Employee ID is required.';
+    if (!formData.name) newErrors.name = 'Candidate Name is required.';
+    if (!formData.skill) newErrors.skill = 'Skills are required.';
+    if (!formData.skillBaseLocation) newErrors.skillBaseLocation = 'Base Location is required.';
+    if (!formData.status) newErrors.status = 'Status is required.';
+    if (formData.pastExperience && formData.pastExperience < 0) {
+      newErrors.pastExperience = "Past Experience cannot be negative.";
+    }
+    if (!formData.accoliteDoj) newErrors.accoliteDoj = 'Accolite DOJ is required.';
+    if (!formData.benchStartDate) newErrors.benchStartDate = 'Bench Start Date is required.';
+    if (!formData.onBench) newErrors.onBench = 'On Bench status is required.';
+    return newErrors;
     return 0;
   };
 
@@ -45,6 +45,7 @@ function CandidateForm() {
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      console.log("Validation errors:", newErrors);
       window.alert("Please fix the errors in the form before submitting.");
       return;
     }
