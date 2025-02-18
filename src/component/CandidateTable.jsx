@@ -305,12 +305,17 @@ const CandidateTable = () => {
         showModal();
     };
 
-    const calculateAging = (benchStartDate) => {
+    
+
+    const calculateAging = (benchStartDate, selectionDate) => {
         if (!benchStartDate) return "N/A";
-        const parsedDate = dayjs(benchStartDate, ["D/M/YYYY", "DD/MM/YYYY"], true);
-        if (!parsedDate.isValid()) return "Invalid Date";
-        return `${dayjs().diff(parsedDate, 'day')} days`;
+        const parsedBenchDate = dayjs(benchStartDate, ["D/M/YYYY", "DD/MM/YYYY"], true);
+        const parsedSelectionDate = selectionDate ? dayjs(selectionDate, ["D/M/YYYY", "DD/MM/YYYY"], true) : dayjs();
+        if (!parsedBenchDate.isValid() || (selectionDate && !parsedSelectionDate.isValid())) return "Invalid Date";
+        return `${parsedSelectionDate.diff(parsedBenchDate, 'day')} days`;
     };
+
+    
 
     const columns = [
         { title: "Employee ID", dataIndex: "empId", key: "empId", fixed: 'left', ...getColumnSearchProps('empId') },
@@ -323,9 +328,12 @@ const CandidateTable = () => {
         { title: "Bench Start Date", dataIndex: "benchStartDate", key: "benchStartDate", ...getColumnSearchProps('benchStartDate') },
         { title: "Onboarding Date", dataIndex: "onboardingDate", key: "onboardingDate", ...getColumnSearchProps('onboardingDate') },
       
-        { title: "Aging", dataIndex: "benchStartDate", key: "aging", render: (_, record) => calculateAging(record.benchStartDate) },
-
-
+       { 
+        title: "Aging", 
+        dataIndex: "benchStartDate", 
+        key: "aging", 
+        render: (_, record) => calculateAging(record.benchStartDate, record.selectionDate) 
+    },
 
         {
     title: "Remarks",
